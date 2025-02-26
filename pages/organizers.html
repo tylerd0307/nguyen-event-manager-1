@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Organizers</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Organizers</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Organizers</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>John Doe</td>
+            <td>john.doe@gmail.com</td>
+            <td>555-2342</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Jane Doe</td>
+            <td>jane.doe@gmail.com</td>
+            <td>555-6234</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>LeBron James</td>
+            <td>lebron.james@gmail.com</td>
+            <td>555-7232</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+    </table>
+
+    <h2>Add Organizer</h2>
+    <form>
+        <label>Organizer Name:</label> <input type="text" name="organizerName"><br>
+        <label>Email:</label> <input type="email" name="email"><br>
+        <label>Phone:</label> <input type="text" name="phone"><br>
+        <input type="submit" value="Add Organizer">
+    </form>
+
+    <h2>Update Organizer</h2>
+    <form>
+        <label>Organizer ID:</label>
+        <select name="organizerID">
+            <option value="1">John Doe (ID: 1)</option>
+            <option value="2">Jane Doe (ID: 2)</option>
+            <option value="3">LeBron James (ID: 3)</option>
+        </select><br>
+        <label>New Organizer Name:</label> <input type="text" name="newOrganizerName"><br>
+        <label>New Email:</label> <input type="text" name="newOrganizerEmail"><br>
+        <label>New Phone:</label> <input type="text" name="newOrganizerPhone"><br>
+        <input type="submit" value="Update Organizer">
+    </form>
+
+    <h2>Delete Organizer</h2>
+    <form>
+        <label>Organizer ID:</label>
+        <select name="deleteOrganizerID">
+            <option value="1">John Doe (ID: 1)</option>
+            <option value="2">Jane Doe (ID: 2)</option>
+            <option value="3">LeBron James (ID: 3)</option>
+        </select><br>
+        <input type="submit" value="Delete Organizer">
+    </form>
+</body>
+</html>

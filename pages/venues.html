@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Venues</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Venues</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Venues</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Capacity</th>
+            <th>Actions</th>
+            <th>Contact Number</th>
+        </tr>
+        <tr>
+            <td>101</td>
+            <td>Grand Hall</td>
+            <td>123 Conference St</td>
+            <td>500</td>
+            <td>555-1111</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>102</td>
+            <td>Meeting Room A</td>
+            <td>456 Office Rd</td>
+            <td>100</td>
+            <td>555-2222</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>103</td>
+            <td>Tech Lab</td>
+            <td>789 Innovation Dr</td>
+            <td>200</td>
+            <td>555-3333</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+    </table>
+
+    <h2>Add Venue</h2>
+    <form>
+        <label>Venue Name:</label> <input type="text" name="venueName"><br>
+        <label>Address:</label> <input type="text" name="address"><br>
+        <label>Capacity:</label> <input type="number" name="capacity"><br>
+        <label>Contact Number:</label> <input type="text" name="contactNumner"><br>
+        <input type="submit" value="Add Venue">
+    </form>
+    
+    <h2>Update Venue</h2>
+    <form>
+        <label>Venue ID:</label>
+        <select name="venueID">
+            <option value="101">Grand Hall (ID: 101)</option>
+            <option value="102">Meeting Room A (ID: 102)</option>
+            <option value="103">Tech Lab (ID: 103)</option>
+        </select><br>
+        <label>New Venue Name:</label> <input type="text" name="newVenueName"><br>
+        <label>New Location:</label> <input type="text" name="newVenueLocation"><br>
+        <label>New Capacity:</label> <input type="text" name="newCapacity"><br>
+        <label>New Contact Number:</label> <input type="text" name="newContactNumber"><br>
+        <input type="submit" value="Update Venue">
+    </form>
+
+    <h2>Delete Venue</h2>
+    <form>
+        <label>Venue ID:</label>
+        <select name="deleteVenueID">
+            <option value="101">Grand Hall (ID: 101)</option>
+            <option value="102">Meeting Room A (ID: 102)</option>
+            <option value="103">Tech Lab (ID: 103)</option>
+        </select><br>
+        <input type="submit" value="Delete Venue">
+    </form>
+</body>
+</html>

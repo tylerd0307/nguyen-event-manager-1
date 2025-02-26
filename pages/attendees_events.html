@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Event Registrations</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Event Registrations</h1>
+    <a href="index.html">Back to Home</a>
+
+    <div id="browseRegistrations">
+        <h2>Browse Event Registrations</h2>
+        <table border="1">
+            <tr>
+                <th>Event ID</th>
+                <th>Attendee ID</th>
+                <th>Registration Status</th>
+                <th>Actions</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>1</td>
+                <td>Registered</td>
+                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>2</td>
+                <td>Registered</td>
+                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>1</td>
+                <td>Pending</td>
+                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="addRegistration">
+        <h2>Add/Edit Event Registration</h2>
+        <form action="#" method="POST">
+            <label for="eventID">Event ID:</label>
+            <select id="eventID" name="eventID">
+                <option value="1">Tech Conference (ID: 1)</option>
+                <option value="2">Marketing Meetup (ID: 2)</option>
+                <option value="2">Developer Workshop (ID: 3)</option>
+            </select>
+
+            <label for="attendeeID">Attendee ID:</label>
+            <select id="attendeeID" name="attendeeID">
+                <option value="101">Tyler Nguyen (ID: 101)</option>
+                <option value="102">Jane Doe (ID: 101)</option>
+            </select>
+
+            <label for="registrationStatus">Status:</label>
+            <select id="registrationStatus" name="registrationStatus">
+                <option value="Registered">Registered</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="deleteRegistration">
+        <h2>Delete Event Registration</h2>
+        <form action="delete_registration.php" method="POST">
+            <label for="deleteEventID">Event ID:</label>
+            <select id="deleteEventID" name="deleteEventID">
+                <option value="1">Tech Conference (ID: 1)</option>
+                <option value="2">Marketing Meetup (ID: 2)</option>
+                <option value="2">Developer Workshop (ID: 3)</option>
+            </select>
+    
+            <label for="deleteAttendeeID">Attendee ID:</label>
+            <select id="deleteAttendeeID" name="deleteAttendeeID">
+                <option value="101">Tyler Nguyen (ID: 101)</option>
+                <option value="102">Jane Doe (ID: 102)</option>
+            </select>
+    
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+</body>
+</html>

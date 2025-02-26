@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Events</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Events</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Events</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Venue</th>
+            <th>Organizer</th>
+            <th>Description</th>
+            <th>Max Attendees</th>
+            <th>Actions</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Tech Conference</td>
+            <td>2024-04-01</td>
+            <td>Grand Hall</td>
+            <td>John Doe</td>
+            <td>A conference on the latest tech trends.</td>
+            <td>200</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Marketing Meetup</td>
+            <td>2024-05-10</td>
+            <td>Meeting Room A</td>
+            <td>Jane Doe</td>
+            <td>NULL</td>
+            <td>100</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Developer Workshop</td>
+            <td>2025-06-15</td>
+            <td>Tech Lab</td>
+            <td>John Doe</td>
+            <td>A workshop to learn new coding techniques.</td>
+            <td>150</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>AI Symposium</td>
+            <td>2025-07-20</td>
+            <td>Grand Hall</td>
+            <td>LeBron James</td>
+            <td>A discussion on AI advancements.</td>
+            <td>250</td>
+            <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        </tr>
+    </table>
+
+    <h2>Add Event</h2>
+    <form>
+        <label>Event Name:</label> <input type="text" name="eventName"><br>
+        <label>Event Date:</label> <input type="date" name="eventDate"><br>
+        <label>Venue:</label> <input type="text" name="venue"><br>
+        <label>Organizer:</label> <input type="text" name="organizer"><br>
+        <label>Description:</label> <input type="text" name="description"><br>
+        <label>Max Attendees:</label> <input type="text" name="maxAttendees"><br>
+        <input type="submit" value="Add Event">
+    </form>
+
+    <h2>Update Event</h2>
+    <form>
+        <label>Event ID:</label>
+        <select name="eventID">
+            <option value="1">Tech Conference (ID: 1)</option>
+            <option value="2">Marketing Meetup (ID: 2)</option>
+            <option value="3">Developer Workshop (ID: 3)</option>
+            <option value="4">AI Symposium (ID: 4)</option>
+        </select><br>
+        <label>New Event Name:</label> <input type="text" name="newEventName"><br>
+        <label>New Event Date:</label> <input type="date" name="newEventDate"><br>
+        <label>New Venue:</label> <input type="text" name="newVenue"><br>
+        <label>New Organizer:</label> <input type="text" name="newOrganizer"><br>
+        <label>New Description:</label> <input type="text" name="newDescription"><br>
+        <label>New Max Attendees:</label> <input type="text" name="newMaxAttendees"><br>
+        <input type="submit" value="Update Event">
+    </form>
+
+    <h2>Delete Event</h2>
+    <form>
+        <label>Event ID:</label>
+        <select name="deleteEventID">
+            <option value="1">Tech Conference (ID: 1)</option>
+            <option value="2">Marketing Meetup (ID: 2)</option>
+            <option value="3">Developer Workshop (ID: 3)</option>
+            <option value="4">AI Symposium (ID: 4)</option>
+        </select><br>
+        <input type="submit" value="Delete Event">
+    </form>
+</body>
+</html>
