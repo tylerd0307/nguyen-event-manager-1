@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Attendees</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Attendees</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Attendees</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+        {{#each data}}
+        <tr>
+            <td>{{this.attendeeID}}</td>
+            <td>{{this.firstName}}</td>
+            <td>{{this.lastName}}</td>
+            <td>{{this.email}}</td>
+            <td>{{#if this.phone}}{{this.phone}}{{else}}NULL{{/if}}</td>
+            <td><a href="#" onclick="editAttendee('{{this.attendeeID}}')">Edit</a> | <a href="#" onclick="deleteAttendee('{{this.attendeeID}}')">Delete</a></td>
+        </tr>
+        {{/each}}
+    </table>
+
+    <h2>Add Attendee</h2>
+    <form id="addAttendeeForm">
+        <label>First Name:</label> <input type="text" name="firstName" required><br>
+        <label>Last Name:</label> <input type="text" name="lastName" required><br>
+        <label>Email:</label> <input type="email" name="email" required><br>
+        <label>Phone:</label> <input type="text" name="phone"><br>
+        <input type="submit" value="Add Attendee">
+    </form>
+
+    <h2>Update Attendee</h2>
+    <form id="updateAttendeeForm">
+        <label>Attendee ID:</label>
+        <select name="attendeeID">
+            {{#each data}}
+            <option value="{{this.attendeeID}}">{{this.firstName}} {{this.lastName}} (ID: {{this.attendeeID}})</option>
+            {{/each}}
+        </select><br>
+        <label>New First Name:</label> <input type="text" name="newAttendeeFirstName"><br>
+        <label>New Last Name:</label> <input type="text" name="newAttendeeLastName"><br>
+        <label>New Email:</label> <input type="email" name="newAttendeeEmail"><br>
+        <label>New Phone:</label> <input type="text" name="newAttendeePhone"><br>
+        <input type="submit" value="Update Attendee">
+    </form>
+
+    <h2>Delete Attendee</h2>
+    <form id="deleteAttendeeForm">
+        <label>Attendee ID:</label>
+        <select name="deleteAttendeeID">
+            {{#each data}}
+            <option value="{{this.attendeeID}}">{{this.firstName}} {{this.lastName}} (ID: {{this.attendeeID}})</option>
+            {{/each}}
+        </select><br>
+        <input type="submit" value="Delete Attendee">
+    </form>
+</body>
+</html>

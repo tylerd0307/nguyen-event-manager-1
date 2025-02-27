@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Event Registrations</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Event Registrations</h1>
+    <a href="index.html">Back to Home</a>
+
+    <div id="browseRegistrations">
+        <h2>Browse Event Registrations</h2>
+        <table border="1">
+            <tr>
+                <th>Event ID</th>
+                <th>Attendee ID</th>
+                <th>Registration Status</th>
+                <th>Actions</th>
+            </tr>
+            {{#each registrations}}
+            <tr>
+                <td>{{this.eventID}}</td>
+                <td>{{this.attendeeID}}</td>
+                <td>{{this.registrationStatus}}</td>
+                <td><a href="#" onclick="editRegistration('{{this.eventID}}', '{{this.attendeeID}}')">Edit</a> | <a href="#" onclick="deleteRegistration('{{this.eventID}}', '{{this.attendeeID}}')">Delete</a></td>
+            </tr>
+            {{/each}}
+        </table>
+    </div>
+
+    <div id="addRegistration">
+        <h2>Add/Edit Event Registration</h2>
+        <form action="#" method="POST">
+            <label for="eventID">Event ID:</label>
+            <select id="eventID" name="eventID">
+                {{#each events}}
+                <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
+                {{/each}}
+            </select>
+
+            <label for="attendeeID">Attendee ID:</label>
+            <select id="attendeeID" name="attendeeID">
+                {{#each attendees}}
+                <option value="{{this.attendeeID}}">{{this.attendeeName}} (ID: {{this.attendeeID}})</option>
+                {{/each}}
+            </select>
+
+            <label for="registrationStatus">Status:</label>
+            <select id="registrationStatus" name="registrationStatus">
+                <option value="Registered">Registered</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="deleteRegistration">
+        <h2>Delete Event Registration</h2>
+        <form action="delete_registration.php" method="POST">
+            <label for="deleteEventID">Event ID:</label>
+            <select id="deleteEventID" name="deleteEventID">
+                {{#each events}}
+                <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
+                {{/each}}
+            </select>
+
+            <label for="deleteAttendeeID">Attendee ID:</label>
+            <select id="deleteAttendeeID" name="deleteAttendeeID">
+                {{#each attendees}}
+                <option value="{{this.attendeeID}}">{{this.attendeeName}} (ID: {{this.attendeeID}})</option>
+                {{/each}}
+            </select>
+
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+</body>
+</html>

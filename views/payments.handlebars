@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Payments</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Payments</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Payments</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Event</th>
+            <th>Attendee</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {{#each data}}
+        <tr>
+            <td>{{this.paymentID}}</td>
+            <td>{{this.event}}</td>
+            <td>{{this.attendee}}</td>
+            <td>{{this.paymentDate}}</td>
+            <td>{{this.paymentStatus}}</td>
+            <td><a href="#" onclick="editPayment('{{this.paymentID}}')">Edit</a> | <a href="#" onclick="deletePayment('{{this.paymentID}}')">Delete</a></td>
+        </tr>
+        {{/each}}
+    </table>
+
+    <h2>Add Payment</h2>
+    <form id="addPaymentForm">
+        <label>Event:</label> <input type="text" name="event" required><br>
+        <label>Attendee:</label> <input type="text" name="attendee" required><br>
+        <label>Date:</label> <input type="date" name="paymentDate" required><br>
+        <label>Status:</label> <input type="text" name="paymentStatus" required><br>
+        <input type="submit" value="Add Payment">
+    </form>
+
+    <h2>Update Payment</h2>
+    <form id="updatePaymentForm">
+        <label>Payment ID:</label>
+        <select name="paymentID">
+            {{#each data}}
+            <option value="{{this.paymentID}}">{{this.event}} (ID: {{this.paymentID}})</option>
+            {{/each}}
+        </select><br>
+        <label>New Event:</label> <input type="text" name="newPaymentEvent"><br>
+        <label>New Attendee:</label> <input type="text" name="newPaymentAttendee"><br>
+        <label>New Date:</label> <input type="date" name="newPaymentDate"><br>
+        <label>New Status:</label> <input type="text" name="newPaymentStatus"><br>
+        <input type="submit" value="Update Payment">
+    </form>
+
+    <h2>Delete Payment</h2>
+    <form id="deletePaymentForm">
+        <label>Payment ID:</label>
+        <select name="deletePaymentID">
+            {{#each data}}
+            <option value="{{this.paymentID}}">{{this.event}} (ID: {{this.paymentID}})</option>
+            {{/each}}
+        </select><br>
+        <input type="submit" value="Delete Payment">
+    </form>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Events</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Events</h1>
+    <a href="index.html">Back to Home</a>
+
+    <div id="browse">
+        <h2>Browse Events</h2>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Venue</th>
+                <th>Organizer</th>
+                <th>Description</th>
+                <th>Max Attendees</th>
+                <th>Actions</th>
+            </tr>
+            {{#each data}}
+            <tr data-value="{{this.eventID}}">
+                <td>{{this.eventID}}</td>
+                <td>{{this.eventName}}</td>
+                <td>{{this.eventDate}}</td>
+                <td>{{this.venue}}</td>
+                <td>{{this.organizer}}</td>
+                <td>{{#if this.description}}{{this.description}}{{else}}NULL{{/if}}</td>
+                <td>{{this.maxAttendees}}</td>
+                <td>
+                    <a href="#" onclick="editEvent('{{this.eventID}}')">Edit</a> |
+                    <a href="#" onclick="deleteEvent('{{this.eventID}}')">Delete</a>
+                </td>
+            </tr>
+            {{/each}}
+        </table>
+    </div>
+
+    <div id="insert">
+        <h2>Add Event</h2>
+        <form id="addEventForm">
+            <label for="eventName">Event Name:</label> 
+            <input type="text" id="eventName" name="eventName" required><br>
+
+            <label for="eventDate">Event Date:</label> 
+            <input type="date" id="eventDate" name="eventDate" required><br>
+
+            <label for="venue">Venue:</label> 
+            <input type="text" id="venue" name="venue" required><br>
+
+            <label for="organizer">Organizer:</label> 
+            <input type="text" id="organizer" name="organizer" required><br>
+
+            <label for="description">Description:</label> 
+            <input type="text" id="description" name="description"><br>
+
+            <label for="maxAttendees">Max Attendees:</label> 
+            <input type="number" id="maxAttendees" name="maxAttendees" required><br>
+
+            <input type="submit" value="Add Event">
+        </form>
+    </div>
+
+    <div id="update">
+        <h2>Update Event</h2>
+        <form id="updateEventForm">
+            <label for="eventID_update">Event ID:</label>
+            <select id="eventID_update" name="eventID_update">
+                {{#each data}}
+                <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
+                {{/each}}
+            </select><br>
+
+            <label for="newEventName">New Event Name:</label> 
+            <input type="text" id="newEventName" name="newEventName"><br>
+
+            <label for="newEventDate">New Event Date:</label> 
+            <input type="date" id="newEventDate" name="newEventDate"><br>
+
+            <label for="newVenue">New Venue:</label> 
+            <input type="text" id="newVenue" name="newVenue"><br>
+
+            <label for="newOrganizer">New Organizer:</label> 
+            <input type="text" id="newOrganizer" name="newOrganizer"><br>
+
+            <label for="newDescription">New Description:</label> 
+            <input type="text" id="newDescription" name="newDescription"><br>
+
+            <label for="newMaxAttendees">New Max Attendees:</label> 
+            <input type="number" id="newMaxAttendees" name="newMaxAttendees"><br>
+
+            <input type="submit" value="Update Event">
+        </form>
+    </div>
+
+    <div id="delete">
+        <h2>Delete Event</h2>
+        <form id="deleteEventForm">
+            <label for="deleteEventID">Event ID:</label>
+            <select id="deleteEventID" name="deleteEventID">
+                {{#each data}}
+                <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
+                {{/each}}
+            </select><br>
+
+            <input type="submit" value="Delete Event">
+        </form>
+    </div>
+
+    <!-- Include the client-side JavaScript files -->
+    <script src="/public/js/events/add-event.js"></script>
+    <script src="/public/js/events/delete-event.js"></script>
+    <script src="/public/js/events/update-event.js"></script>
+</body>
+</html>

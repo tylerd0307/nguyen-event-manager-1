@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Venues</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Venues</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Venues</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Capacity</th>
+            <th>Contact Number</th>
+            <th>Actions</th>
+        </tr>
+        {{#each data}}
+        <tr>
+            <td>{{this.venueID}}</td>
+            <td>{{this.venueName}}</td>
+            <td>{{this.address}}</td>
+            <td>{{this.capacity}}</td>
+            <td>{{this.contactNumber}}</td>
+            <td><a href="#" onclick="editVenue('{{this.venueID}}')">Edit</a> | <a href="#" onclick="deleteVenue('{{this.venueID}}')">Delete</a></td>
+        </tr>
+        {{/each}}
+    </table>
+
+    <h2>Add Venue</h2>
+    <form id="addVenueForm">
+        <label>Venue Name:</label> <input type="text" name="venueName" required><br>
+        <label>Address:</label> <input type="text" name="address" required><br>
+        <label>Capacity:</label> <input type="number" name="capacity" required><br>
+        <label>Contact Number:</label> <input type="text" name="contactNumber"><br>
+        <input type="submit" value="Add Venue">
+    </form>
+    
+    <h2>Update Venue</h2>
+    <form id="updateVenueForm">
+        <label>Venue ID:</label>
+        <select name="venueID">
+            {{#each data}}
+            <option value="{{this.venueID}}">{{this.venueName}} (ID: {{this.venueID}})</option>
+            {{/each}}
+        </select><br>
+        <label>New Venue Name:</label> <input type="text" name="newVenueName"><br>
+        <label>New Address:</label> <input type="text" name="newVenueAddress"><br>
+        <label>New Capacity:</label> <input type="number" name="newCapacity"><br>
+        <label>New Contact Number:</label> <input type="text" name="newContactNumber"><br>
+        <input type="submit" value="Update Venue">
+    </form>
+
+    <h2>Delete Venue</h2>
+    <form id="deleteVenueForm">
+        <label>Venue ID:</label>
+        <select name="deleteVenueID">
+            {{#each data}}
+            <option value="{{this.venueID}}">{{this.venueName}} (ID: {{this.venueID}})</option>
+            {{/each}}
+        </select><br>
+        <input type="submit" value="Delete Venue">
+    </form>
+</body>
+</html>

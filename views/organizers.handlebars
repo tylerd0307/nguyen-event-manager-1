@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Organizers</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1>Manage Organizers</h1>
+    <a href="index.html">Back to Home</a>
+
+    <h2>Browse Organizers</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+        {{#each data}}
+        <tr>
+            <td>{{this.organizerID}}</td>
+            <td>{{this.organizerName}}</td>
+            <td>{{this.email}}</td>
+            <td>{{this.phone}}</td>
+            <td><a href="#" onclick="editOrganizer('{{this.organizerID}}')">Edit</a> | <a href="#" onclick="deleteOrganizer('{{this.organizerID}}')">Delete</a></td>
+        </tr>
+        {{/each}}
+    </table>
+
+    <h2>Add Organizer</h2>
+    <form id="addOrganizerForm">
+        <label>Organizer Name:</label> <input type="text" name="organizerName" required><br>
+        <label>Email:</label> <input type="email" name="email" required><br>
+        <label>Phone:</label> <input type="text" name="phone"><br>
+        <input type="submit" value="Add Organizer">
+    </form>
+
+    <h2>Update Organizer</h2>
+    <form id="updateOrganizerForm">
+        <label>Organizer ID:</label>
+        <select name="organizerID">
+            {{#each data}}
+            <option value="{{this.organizerID}}">{{this.organizerName}} (ID: {{this.organizerID}})</option>
+            {{/each}}
+        </select><br>
+        <label>New Organizer Name:</label> <input type="text" name="newOrganizerName"><br>
+        <label>New Email:</label> <input type="email" name="newOrganizerEmail"><br>
+        <label>New Phone:</label> <input type="text" name="newOrganizerPhone"><br>
+        <input type="submit" value="Update Organizer">
+    </form>
+
+    <h2>Delete Organizer</h2>
+    <form id="deleteOrganizerForm">
+        <label>Organizer ID:</label>
+        <select name="deleteOrganizerID">
+            {{#each data}}
+            <option value="{{this.organizerID}}">{{this.organizerName}} (ID: {{this.organizerID}})</option>
+            {{/each}}
+        </select><br>
+        <input type="submit" value="Delete Organizer">
+    </form>
+</body>
+</html>
