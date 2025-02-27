@@ -10,7 +10,7 @@
 
     <div id="browse">
         <h2>Browse Events</h2>
-        <table border="1">
+        <table id="eventTable" border="1">
             <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -18,6 +18,7 @@
                 <th>Venue</th>
                 <th>Organizer</th>
                 <th>Description</th>
+                <th>Requires Payment</th>
                 <th>Max Attendees</th>
                 <th>Actions</th>
             </tr>
@@ -26,13 +27,13 @@
                 <td>{{this.eventID}}</td>
                 <td>{{this.eventName}}</td>
                 <td>{{this.eventDate}}</td>
-                <td>{{this.venue}}</td>
-                <td>{{this.organizer}}</td>
+                <td>{{this.venueName}}</td>
+                <td>{{this.organizerName}}</td>
                 <td>{{#if this.description}}{{this.description}}{{else}}NULL{{/if}}</td>
+                <td>{{#if this.requiresPayment}}Yes{{else}}No{{/if}}</td>
                 <td>{{this.maxAttendees}}</td>
                 <td>
-                    <a href="#" onclick="editEvent('{{this.eventID}}')">Edit</a> |
-                    <a href="#" onclick="deleteEvent('{{this.eventID}}')">Delete</a>
+                    <button onclick="deleteEvent('{{this.eventID}}')">Delete</button>
                 </td>
             </tr>
             {{/each}}
@@ -48,14 +49,20 @@
             <label for="eventDate">Event Date:</label> 
             <input type="date" id="eventDate" name="eventDate" required><br>
 
-            <label for="venue">Venue:</label> 
-            <input type="text" id="venue" name="venue" required><br>
+            <label for="venueName">Venue:</label> 
+            <input type="text" id="venueName" name="venueName" required><br>
 
-            <label for="organizer">Organizer:</label> 
-            <input type="text" id="organizer" name="organizer" required><br>
+            <label for="organizerName">Organizer:</label> 
+            <input type="text" id="organizerName" name="organizerName" required><br>
 
             <label for="description">Description:</label> 
             <input type="text" id="description" name="description"><br>
+
+            <label for="requiresPayment">Requires Payment:</label>
+            <select id="requiresPayment" name="requiresPayment" required>
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select><br>
 
             <label for="maxAttendees">Max Attendees:</label> 
             <input type="number" id="maxAttendees" name="maxAttendees" required><br>
@@ -80,14 +87,20 @@
             <label for="newEventDate">New Event Date:</label> 
             <input type="date" id="newEventDate" name="newEventDate"><br>
 
-            <label for="newVenue">New Venue:</label> 
-            <input type="text" id="newVenue" name="newVenue"><br>
+            <label for="newVenueName">New Venue:</label> 
+            <input type="text" id="newVenueName" name="newVenue"><br>
 
-            <label for="newOrganizer">New Organizer:</label> 
-            <input type="text" id="newOrganizer" name="newOrganizer"><br>
+            <label for="newOrganizerName">New Organizer:</label> 
+            <input type="text" id="newOrganizerName" name="newOrganizer"><br>
 
             <label for="newDescription">New Description:</label> 
             <input type="text" id="newDescription" name="newDescription"><br>
+
+            <label for="newRequiresPayment">New Requires Payment:</label>
+            <select id="newRequiresPayment" name="newRequiresPayment">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select><br>
 
             <label for="newMaxAttendees">New Max Attendees:</label> 
             <input type="number" id="newMaxAttendees" name="newMaxAttendees"><br>
@@ -110,9 +123,9 @@
         </form>
     </div>
 
-    <!-- Include the client-side JavaScript files -->
-    <script src="/public/js/events/add-event.js"></script>
-    <script src="/public/js/events/delete-event.js"></script>
-    <script src="/public/js/events/update-event.js"></script>
+    <!-- Include client-side JavaScript -->
+    <script src="/js/events/add-event.js"></script>
+    <script src="/js/events/delete-event.js"></script>
+    <script src="/js/events/update-event.js"></script>
 </body>
 </html>

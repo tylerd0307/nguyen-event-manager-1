@@ -1,127 +1,112 @@
-// Get the objects we need to modify
-let addEventForm = document.getElementById('addEventForm');
+let addEventForm = document.getElementById("addEventForm");
 
-// Modify the objects we need
+// Listen for form submission
 addEventForm.addEventListener("submit", function (e) {
-    
-    // Prevent the form from submitting
-    e.preventDefault();
+    e.preventDefault(); // Prevent page reload
 
-    // Get form fields we need to get data from
-    let inputEventName = document.getElementById("eventName");
-    let inputEventDate = document.getElementById("eventDate");
-    let inputVenue = document.getElementById("venue");
-    let inputOrganizer = document.getElementById("organizer");
-    let inputDescription = document.getElementById("description");
-    let inputMaxAttendees = document.getElementById("maxAttendees");
+    // Get input values
+    let inputEventName = document.getElementById("eventName").value;
+    let inputEventDate = document.getElementById("eventDate").value;
+    let inputVenue = document.getElementById("venueName").value;
+    let inputOrganizer = document.getElementById("organizerName").value;
+    let inputDescription = document.getElementById("description").value;
+    let inputRequiresPayment = document.getElementById("requiresPayment").value;
+    let inputMaxAttendees = document.getElementById("maxAttendees").value;
 
-    // Get the values from the form fields
-    let eventNameValue = inputEventName.value;
-    let eventDateValue = inputEventDate.value;
-    let venueValue = inputVenue.value;
-    let organizerValue = inputOrganizer.value;
-    let descriptionValue = inputDescription.value;
-    let maxAttendeesValue = inputMaxAttendees.value;
+    // Convert `requiresPayment` to an actual number (0 or 1)
+    let requiresPaymentValue = parseInt(inputRequiresPayment, 10); 
 
-    // Put our data we want to send in a JavaScript object
+    // Create an object to send to the backend
     let data = {
-        name: eventNameValue,
-        date: eventDateValue,
-        venue: venueValue,
-        organizer: organizerValue,
-        description: descriptionValue,
-        maxAttendees: maxAttendeesValue
-    }
+        eventName: inputEventName,
+        eventDate: inputEventDate,
+        venueName: inputVenue,
+        organizerName: inputOrganizer,
+        description: inputDescription,
+        requiresPayment: requiresPaymentValue,  // ✅ Ensure it's a number
+        maxAttendees: inputMaxAttendees
+    };
 
-    // Setup our AJAX request
+    // AJAX request
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", "/add-event", true);
     xhttp.setRequestHeader("Content-type", "application/json");
 
-    // Tell our AJAX request how to resolve
-    xhttp.onreadystatechange = () => {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-
-            // Add the new data to the table
-            addRowToTable(xhttp.response);
-
-            // Clear the input fields for another transaction
-            inputEventName.value = '';
-            inputEventDate.value = '';
-            inputVenue.value = '';
-            inputOrganizer.value = '';
-            inputDescription.value = '';
-            inputMaxAttendees.value = '';
+    xhttp.onreadystatechange = function () {
+        if (xhttp.readyState == 4) {
+            console.log("Server Response:", xhttp.responseText); // Log response
+    
+            if (xhttp.status == 200) {
+                try {
+                    addRowToTable(xhttp.responseText);
+                    addEventForm.reset(); // Clear form
+                } catch (error) {
+                    console.error("Error parsing JSON:", error);
+                    console.error("Raw server response:", xhttp.responseText);
+                }
+            } else {
+                console.error("Failed to add event.");
+            }
         }
-        else if (xhttp.readyState == 4 && xhttp.status != 200) {
-            console.log("There was an error with the input.");
-        }
-    }
+    };
+    
 
-    // Send the request and wait for the response
+    // Send data
     xhttp.send(JSON.stringify(data));
-})
+});
 
-// Creates a single row from an Object representing a single record from the database
+
+// Function to add a new row to the table
 function addRowToTable(data) {
-
-    // Get a reference to the current table on the page
     let currentTable = document.querySelector("#browse table");
+    let newRow = JSON.parse(data); // Parse the server response
 
-    // Parse the response data
-    let parsedData = JSON.parse(data);
-    let newRow = parsedData[parsedData.length - 1]; // Get the last event in the array
-
-    // Create a row and cells
     let row = document.createElement("TR");
-    let deleteButtonContainer = document.createElement("TD");
+    row.setAttribute("data-value", newRow.eventID);
+
     let idCell = document.createElement("TD");
     let eventNameCell = document.createElement("TD");
     let eventDateCell = document.createElement("TD");
     let venueCell = document.createElement("TD");
     let organizerCell = document.createElement("TD");
     let descriptionCell = document.createElement("TD");
+    let requiresPaymentCell = document.createElement("TD");
     let maxAttendeesCell = document.createElement("TD");
+    let actionsCell = document.createElement("TD");
 
-    // Fill the cells with correct data
     let deleteButton = document.createElement("button");
     deleteButton.innerText = "Delete";
-    deleteButton.setAttribute("onclick", `deleteEvent('${newRow.id}')`);
-    
-    deleteButtonContainer.appendChild(deleteButton);
-    idCell.innerText = newRow.id;
-    eventNameCell.innerText = newRow.name;
-    eventDateCell.innerText = newRow.date;
-    venueCell.innerText = newRow.venue;
-    organizerCell.innerText = newRow.organizer;
-    descriptionCell.innerText = newRow.description || 'NULL';
+    deleteButton.setAttribute("onclick", `deleteEvent('${newRow.eventID}')`);
+
+    actionsCell.appendChild(deleteButton);
+    idCell.innerText = newRow.eventID;
+    eventNameCell.innerText = newRow.eventName;
+    eventDateCell.innerText = newRow.eventDate;
+    venueCell.innerText = newRow.venueName;
+    organizerCell.innerText = newRow.organizerName;
+    descriptionCell.innerText = newRow.description || "NULL";
+    requiresPaymentCell.innerText = newRow.requiresPayment ? "Yes" : "No";
     maxAttendeesCell.innerText = newRow.maxAttendees;
 
-    // Add the cells to the row
-    row.appendChild(deleteButtonContainer);
     row.appendChild(idCell);
     row.appendChild(eventNameCell);
     row.appendChild(eventDateCell);
     row.appendChild(venueCell);
     row.appendChild(organizerCell);
     row.appendChild(descriptionCell);
+    row.appendChild(requiresPaymentCell);
     row.appendChild(maxAttendeesCell);
+    row.appendChild(actionsCell);
 
-    // Add data attribute
-    row.setAttribute("data-value", newRow.id);
-    
-    // Add the row to the table
     currentTable.appendChild(row);
-
-    // Update any relevant dropdowns (if needed)
     updateEventDropdowns(newRow);
 }
 
-// Updates event dropdowns (e.g., for event filtering or editing)
+// Function to update event dropdowns
 function updateEventDropdowns(newEvent) {
     let eventDropdown = document.getElementById("eventID_update");
     let option = document.createElement("option");
-    option.text = newEvent.id + ' - ' + newEvent.name;
-    option.value = newEvent.id;
+    option.text = `${newEvent.eventID} - ${newEvent.eventName}`;
+    option.value = newEvent.eventID;
     eventDropdown.appendChild(option);
 }

@@ -5,8 +5,8 @@ document.getElementById("updateEventForm").addEventListener("submit", function(e
     let eventToUpdate = document.getElementById("eventID");  // Event ID to update
     let updateEventName = document.getElementById("newEventName");
     let updateEventDate = document.getElementById("newEventDate");
-    let updateVenue = document.getElementById("newVenue");
-    let updateOrganizer = document.getElementById("newOrganizer");
+    let updateVenue = document.getElementById("newVenueName");
+    let updateOrganizer = document.getElementById("newOrganizerName");
     let updateDescription = document.getElementById("newDescription");
     let updateMaxAttendees = document.getElementById("newMaxAttendees");
 

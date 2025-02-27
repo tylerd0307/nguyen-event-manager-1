@@ -17,7 +17,9 @@ app.set("views", path.join(__dirname, "views"));  // Explicitly set the views di
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+// Ensure Express serves files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Routes
 
@@ -47,9 +49,10 @@ app.get('/events', function(req, res) {
 
 // Add Event - Handle POST request to add a new event
 app.post('/add-event', function(req, res) {
+    console.log("POST request received for /add-event");
     let data = req.body;
 
-    // Get IDs for the venue and organizer from the names provided in the form
+    // SQL query for inserting event into the database
     let query = `
         INSERT INTO Events (eventName, eventDate, venueID, organizerID, description, requiresPayment, maxAttendees)
         SELECT ?, ?, v.venueID, o.organizerID, ?, ?, ?
@@ -57,16 +60,42 @@ app.post('/add-event', function(req, res) {
         WHERE v.venueName = ? AND o.organizerName = ?;
     `;
     
-    // Use Nicholas's database connection pool for adding events
-    db.tylerPool.query(query, [data.eventName, data.eventDate, data.description, data.requiresPayment, data.maxAttendees, data.venueName, data.organizerName], function(error, rows, fields) {
+    db.tylerPool.query(query, [data.eventName, data.eventDate, data.description, data.requiresPayment, data.maxAttendees, data.venueName, data.organizerName], function(error, result) {
         if (error) {
-            console.log(error);
-            res.sendStatus(400);
-        } else {
-            res.redirect('/events');  // Redirect to events page after successful insertion
+            console.log("Insert Error:", error);
+            return res.status(400).json({ error: "Failed to insert event." });
         }
+
+        let eventID = result.insertId; // Get the new event's ID
+
+        // Fetch the newly inserted event
+        let selectQuery = `
+            SELECT e.eventID, e.eventName, e.eventDate, v.venueName, o.organizerName, 
+                   e.description, e.requiresPayment, e.maxAttendees
+            FROM Events e
+            JOIN Venues v ON e.venueID = v.venueID
+            JOIN Organizers o ON e.organizerID = o.organizerID
+            WHERE e.eventID = ?;
+        `;
+        
+        db.tylerPool.query(selectQuery, [eventID], function(selectError, rows) {
+            if (selectError) {
+                console.log("Select Error:", selectError);
+                return res.status(400).json({ error: "Failed to retrieve new event." });
+            }
+
+            if (rows.length === 0) {
+                console.log("Event inserted but not found in DB.");
+                return res.status(404).json({ error: "Event not found after insertion." });
+            }
+
+            res.json(rows[0]); // Send the inserted event as JSON
+        });
     });
 });
+
+
+
 
 // Update Event - Handle POST request to update an event
 app.post('/update-event', function(req, res) {
