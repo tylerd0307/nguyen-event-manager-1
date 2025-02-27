@@ -8,9 +8,11 @@ var port = process.env.PORT || 9012;
 // Handlebars Setup
 var exphbs = require('express-handlebars');
 app.engine("handlebars", exphbs.engine({
-    defaultLayout: "main"
+    defaultLayout: "main",
+    layoutsDir: path.join(__dirname, "views/layouts")
 }));
 app.set("view engine", "handlebars");
+app.set("views", path.join(__dirname, "views"));  // Explicitly set the views directory
 
 // Middleware
 app.use(express.json());
@@ -111,7 +113,7 @@ app.post('/delete-event', function(req, res) {
     });
 });
 
-// Listener
-app.listen(port, function() {
-    console.log('Express started on http://localhost:' + port + '; press Ctrl-C to terminate.');
+// Start the server
+app.listen(port, () => {
+    console.log(`Server running on http://classwork.engr.oregonstate.edu:${port}`);
 });
