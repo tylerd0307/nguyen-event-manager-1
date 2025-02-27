@@ -49,11 +49,27 @@
             <label for="eventDate">Event Date:</label> 
             <input type="date" id="eventDate" name="eventDate" required><br>
 
-            <label for="venueName">Venue:</label> 
-            <input type="text" id="venueName" name="venueName" required><br>
+            <label for="venueSelect">Select Venue:</label>
+            <select id="venueSelect" name="venueSelect">
+                <option value="">-- Select Existing Venue --</option>
+                {{#each venues}}
+                <option value="{{this.venueName}}">{{this.venueName}}</option>
+                {{/each}}
+            </select><br>
 
-            <label for="organizerName">Organizer:</label> 
-            <input type="text" id="organizerName" name="organizerName" required><br>
+            <label for="newVenue">Or Enter New Venue:</label>
+            <input type="text" id="newVenue" name="newVenue"><br>
+
+            <label for="organizerSelect">Select Organizer:</label>
+            <select id="organizerSelect" name="organizerSelect">
+                <option value="">-- Select Existing Organizer --</option>
+                {{#each organizers}}
+                <option value="{{this.organizerName}}">{{this.organizerName}}</option>
+                {{/each}}
+            </select><br>
+
+            <label for="newOrganizer">Or Enter New Organizer:</label>
+            <input type="text" id="newOrganizer" name="newOrganizer"><br>
 
             <label for="description">Description:</label> 
             <input type="text" id="description" name="description"><br>
@@ -74,24 +90,31 @@
     <div id="update">
         <h2>Update Event</h2>
         <form id="updateEventForm">
-            <label for="eventID_update">Event ID:</label>
+        <label for="eventID_update">Event ID:</label>
             <select id="eventID_update" name="eventID_update">
                 {{#each data}}
-                <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
+                    <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
                 {{/each}}
             </select><br>
 
-            <label for="newEventName">New Event Name:</label> 
-            <input type="text" id="newEventName" name="newEventName"><br>
-
-            <label for="newEventDate">New Event Date:</label> 
-            <input type="date" id="newEventDate" name="newEventDate"><br>
-
-            <label for="newVenueName">New Venue:</label> 
+            <label for="newVenueName">New Venue:</label>
+            <select id="newVenueName">
+                <option value="">-- Select Existing Venue --</option>
+                {{#each venues}}
+                    <option value="{{this.venueName}}">{{this.venueName}}</option>
+                {{/each}}
+            </select>
             <input type="text" id="newVenueName" name="newVenue"><br>
 
-            <label for="newOrganizerName">New Organizer:</label> 
+            <label for="newOrganizerName">New Organizer:</label>
+            <select id="newOrganizerName">
+                <option value="">-- Select Existing Organizer --</option>
+                {{#each organizers}}
+                    <option value="{{this.organizerName}}">{{this.organizerName}}</option>
+                {{/each}}
+            </select>
             <input type="text" id="newOrganizerName" name="newOrganizer"><br>
+
 
             <label for="newDescription">New Description:</label> 
             <input type="text" id="newDescription" name="newDescription"><br>

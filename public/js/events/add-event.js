@@ -1,59 +1,57 @@
 let addEventForm = document.getElementById("addEventForm");
 
-// Listen for form submission
 addEventForm.addEventListener("submit", function (e) {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
 
     // Get input values
     let inputEventName = document.getElementById("eventName").value;
     let inputEventDate = document.getElementById("eventDate").value;
-    let inputVenue = document.getElementById("venueName").value;
-    let inputOrganizer = document.getElementById("organizerName").value;
     let inputDescription = document.getElementById("description").value;
     let inputRequiresPayment = document.getElementById("requiresPayment").value;
     let inputMaxAttendees = document.getElementById("maxAttendees").value;
 
-    // Convert `requiresPayment` to an actual number (0 or 1)
-    let requiresPaymentValue = parseInt(inputRequiresPayment, 10); 
+    // Venue selection
+    let selectedVenue = document.getElementById("venueSelect").value;
+    let newVenue = document.getElementById("newVenue").value.trim();
 
-    // Create an object to send to the backend
+    // Organizer selection
+    let selectedOrganizer = document.getElementById("organizerSelect").value;
+    let newOrganizer = document.getElementById("newOrganizer").value.trim();
+
+    // Determine which values to send
+    let venueToUse = newVenue !== "" ? newVenue : selectedVenue;
+    let organizerToUse = newOrganizer !== "" ? newOrganizer : selectedOrganizer;
+
+    if (!venueToUse || !organizerToUse) {
+        alert("Please select an existing venue/organizer or enter a new one.");
+        return;
+    }
+
+    // Prepare data to send
     let data = {
         eventName: inputEventName,
         eventDate: inputEventDate,
-        venueName: inputVenue,
-        organizerName: inputOrganizer,
+        venueName: venueToUse,
+        organizerName: organizerToUse,
         description: inputDescription,
-        requiresPayment: requiresPaymentValue,  // ✅ Ensure it's a number
+        requiresPayment: parseInt(inputRequiresPayment, 10),
         maxAttendees: inputMaxAttendees
     };
 
     // AJAX request
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "/add-event", true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-
-    xhttp.onreadystatechange = function () {
-        if (xhttp.readyState == 4) {
-            console.log("Server Response:", xhttp.responseText); // Log response
-    
-            if (xhttp.status == 200) {
-                try {
-                    addRowToTable(xhttp.responseText);
-                    addEventForm.reset(); // Clear form
-                } catch (error) {
-                    console.error("Error parsing JSON:", error);
-                    console.error("Raw server response:", xhttp.responseText);
-                }
-            } else {
-                console.error("Failed to add event.");
-            }
-        }
-    };
-    
-
-    // Send data
-    xhttp.send(JSON.stringify(data));
+    fetch("/add-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(newEvent => {
+        console.log("Event Added:", newEvent);
+        location.reload(); // Refresh page to update event list
+    })
+    .catch(error => console.error("Error adding event:", error));
 });
+
 
 
 // Function to add a new row to the table
