@@ -151,7 +151,7 @@ app.post('/update-event', function(req, res) {
         WHERE NOT EXISTS (SELECT 1 FROM Venues WHERE venueName = ?) 
         LIMIT 1;
     `;
-    db.tylerPool.query(venueQuery, [data.venueName, data.venueName], function(venueError) {
+    db.nicholasPool.query(venueQuery, [data.venueName, data.venueName], function(venueError) {
         if (venueError) {
             console.error("❌ Venue Insert Error:", venueError);
             return res.status(400).json({ error: "Failed to insert venue." });
@@ -159,7 +159,7 @@ app.post('/update-event', function(req, res) {
 
         // Get venue ID
         let getVenueIDQuery = "SELECT venueID FROM Venues WHERE venueName = ?";
-        db.tylerPool.query(getVenueIDQuery, [data.venueName], function(err, venueRows) {
+        db.nicholasPool.query(getVenueIDQuery, [data.venueName], function(err, venueRows) {
             if (err || venueRows.length === 0) {
                 console.error("❌ Venue Lookup Error:", err);
                 return res.status(400).json({ error: "Failed to get venue ID." });
@@ -174,7 +174,7 @@ app.post('/update-event', function(req, res) {
                 LIMIT 1;
             `;
 
-            db.tylerPool.query(organizerQuery, [data.organizerName, data.organizerName], function(organizerError) {
+            db.nicholasPool.query(organizerQuery, [data.organizerName, data.organizerName], function(organizerError) {
                 if (organizerError) {
                     console.error("❌ Organizer Insert Error:", organizerError);
                     return res.status(400).json({ error: "Failed to insert organizer." });
@@ -182,7 +182,7 @@ app.post('/update-event', function(req, res) {
 
                 // Get organizer ID
                 let getOrganizerIDQuery = "SELECT organizerID FROM Organizers WHERE organizerName = ?";
-                db.tylerPool.query(getOrganizerIDQuery, [data.organizerName], function(err, organizerRows) {
+                db.nicholasPool.query(getOrganizerIDQuery, [data.organizerName], function(err, organizerRows) {
                     if (err || organizerRows.length === 0) {
                         return res.status(400).json({ error: "Failed to get organizer ID." });
                     }
@@ -197,7 +197,7 @@ app.post('/update-event', function(req, res) {
                         WHERE eventID = ?;
                     `;
 
-                    db.tylerPool.query(updateQuery, [data.eventName, data.eventDate, venueID, organizerID, data.description, data.requiresPayment, data.maxAttendees, data.eventID], function(updateError) {
+                    db.nicholasPool.query(updateQuery, [data.eventName, data.eventDate, venueID, organizerID, data.description, data.requiresPayment, data.maxAttendees, data.eventID], function(updateError) {
                         if (updateError) {
                             console.error("❌ Update Error:", updateError);
                             return res.status(400).json({ error: "Failed to update event." });
@@ -215,7 +215,7 @@ app.post('/update-event', function(req, res) {
                             WHERE e.eventID = ?;
                         `;
                         
-                        db.tylerPool.query(selectQuery, [data.eventID], function(selectError, result) {
+                        db.nicholasPool.query(selectQuery, [data.eventID], function(selectError, result) {
                             if (selectError || result.length === 0) {
                                 return res.status(400).json({ error: "Failed to fetch updated event." });
                             }
@@ -245,13 +245,13 @@ app.post('/delete-event', function(req, res) {
     let deleteFromAttendees = `DELETE FROM Attendees_Events WHERE eventID = ?`;
     let deleteFromPayments = `DELETE FROM Payments WHERE eventID = ?`;
 
-    db.tylerPool.query(deleteFromAttendees, [eventID], function(err) {
+    db.nicholasPool.query(deleteFromAttendees, [eventID], function(err) {
         if (err) {
             console.error("❌ Error deleting from Attendees_Events:", err);
             return res.status(500).json({ error: "Failed to delete related attendee records." });
         }
 
-        db.tylerPool.query(deleteFromPayments, [eventID], function(err) {
+        db.nicholasPool.query(deleteFromPayments, [eventID], function(err) {
             if (err) {
                 console.error("❌ Error deleting from Payments:", err);
                 return res.status(500).json({ error: "Failed to delete payment records." });
@@ -260,7 +260,7 @@ app.post('/delete-event', function(req, res) {
             // Finally delete from Events table
             let deleteEventQuery = `DELETE FROM Events WHERE eventID = ?`;
 
-            db.tylerPool.query(deleteEventQuery, [eventID], function(eventError) {
+            db.nicholasPool.query(deleteEventQuery, [eventID], function(eventError) {
                 if (eventError) {
                     console.error("❌ Error deleting event:", eventError);
                     return res.status(500).json({ error: "Failed to delete event." });
@@ -276,5 +276,5 @@ app.post('/delete-event', function(req, res) {
 
 // Start Server
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://classwork.engr.oregonstate.edu:${port}`);
 });
