@@ -1,4 +1,10 @@
 function deleteEvent(eventID) {
+    // Confirmation prompt before sending the delete request
+    if (!confirm("Are you sure you want to delete this event?")) {
+        console.log("Event deletion cancelled.");
+        return;
+    }
+
     let link = '/delete-event';
     let data = {
         eventID: parseInt(eventID)
@@ -9,7 +15,7 @@ function deleteEvent(eventID) {
     // Make the AJAX request to delete the event
     $.ajax({
         url: link,
-        type: 'POST', // We are using POST here as per your app.js route
+        type: 'POST',
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         success: function(result) {
@@ -27,18 +33,16 @@ function deleteEvent(eventID) {
 function deleteRow(eventID) {
     let table = document.getElementById("eventTable");
     for (let i = 0, row; row = table.rows[i]; i++) {
-        // Convert both values to numbers to ensure consistent comparison
         if (parseInt(table.rows[i].getAttribute("data-value")) === eventID) {
-            table.deleteRow(i);  // Remove the row from the table
+            table.deleteRow(i);
             break;
         }
     }
 
     // Update the dropdown for selecting event ID in the update form
-    let selectEventsMenu = document.getElementById("eventID");
+    let selectEventsMenu = document.getElementById("deleteEventID");
     for (let i = 0; i < selectEventsMenu.options.length; i++) {
         if (parseInt(selectEventsMenu.options[i].value) === eventID) {
-            // Remove the option from the dropdown
             selectEventsMenu.remove(i);
             break;
         }
@@ -46,13 +50,19 @@ function deleteRow(eventID) {
 
     // Update dropdown for filtering by event ID (if applicable)
     let filterEventsMenu = document.getElementById("eventIDDropdown");
-    if (filterEventsMenu) {  // Check if the element exists
+    if (filterEventsMenu) {
         for (let i = 0; i < filterEventsMenu.options.length; i++) {
             if (parseInt(filterEventsMenu.options[i].value) === eventID) {
-                // Remove the option from the filter dropdown
                 filterEventsMenu.remove(i);
                 break;
             }
         }
     }
 }
+
+// Event listener for the form submission
+document.getElementById("deleteEventForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const eventID = document.getElementById("deleteEventID").value;
+    deleteEvent(eventID);
+});

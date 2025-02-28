@@ -3,7 +3,7 @@ var db = require('./db-connector');  // Import database connection pools
 var express = require('express');
 var path = require('path');
 var app = express();
-var port = process.env.PORT || 9012;
+var port = process.env.PORT || 9013;
 
 // Handlebars Setup
 var exphbs = require('express-handlebars');
@@ -131,45 +131,150 @@ app.post('/add-event', function(req, res) {
     });
 });
 
-// Delete Event - Handle DELETE request to remove an event
-app.post('/delete-event', function(req, res) {
-    let data = req.body;
 
-    let query = `
-        DELETE FROM Attendees_Events WHERE eventID = ?;
-        DELETE FROM Payments WHERE eventID = ?;
-        DELETE FROM Events WHERE eventID = ?;
-    `;
-    
-    db.nicholasPool.query(query, [data.eventID, data.eventID, data.eventID], function(error, rows, fields) {
-        if (error) {
-            console.log(error);
-            res.sendStatus(400);
-        } else {
-            res.redirect('/events');
-        }
-    });
-});
-
+// Update Event - Handle POST request to update an event
 app.post('/update-event', function(req, res) {
-    let data = req.body;
-    let query = `
-        UPDATE Events
-        SET eventName = ?, eventDate = ?, description = ?, maxAttendees = ?
-        WHERE eventID = ?;
-    `;
+    console.log("📌 POST request received for /update-event");
+    console.log("📌 Received Data:", req.body);
 
-    db.nicholasPool.query(query, [data.eventName, data.eventDate, data.description, data.maxAttendees, data.eventID], function(error) {
-        if (error) {
-            console.log("Error updating event:", error);
-            res.sendStatus(400);
-        } else {
-            res.status(200).json({ success: true });
+    let data = req.body;
+
+    if (!data.eventID || !data.eventName || !data.eventDate) {
+        console.error("❌ Missing required fields!");
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    // Step 1: Check if venue exists, insert if not
+    let venueQuery = `
+        INSERT INTO Venues (venueName, address, capacity)
+        SELECT ?, 'Unknown Address', 100
+        WHERE NOT EXISTS (SELECT 1 FROM Venues WHERE venueName = ?) 
+        LIMIT 1;
+    `;
+    db.tylerPool.query(venueQuery, [data.venueName, data.venueName], function(venueError) {
+        if (venueError) {
+            console.error("❌ Venue Insert Error:", venueError);
+            return res.status(400).json({ error: "Failed to insert venue." });
         }
+
+        // Get venue ID
+        let getVenueIDQuery = "SELECT venueID FROM Venues WHERE venueName = ?";
+        db.tylerPool.query(getVenueIDQuery, [data.venueName], function(err, venueRows) {
+            if (err || venueRows.length === 0) {
+                console.error("❌ Venue Lookup Error:", err);
+                return res.status(400).json({ error: "Failed to get venue ID." });
+            }
+            let venueID = venueRows[0].venueID;
+
+            // Step 2: Check if organizer exists, insert if not
+            let organizerQuery = `
+                INSERT INTO Organizers (organizerName, email)
+                SELECT ?, 'unknown@example.com'
+                WHERE NOT EXISTS (SELECT 1 FROM Organizers WHERE organizerName = ?) 
+                LIMIT 1;
+            `;
+
+            db.tylerPool.query(organizerQuery, [data.organizerName, data.organizerName], function(organizerError) {
+                if (organizerError) {
+                    console.error("❌ Organizer Insert Error:", organizerError);
+                    return res.status(400).json({ error: "Failed to insert organizer." });
+                }
+
+                // Get organizer ID
+                let getOrganizerIDQuery = "SELECT organizerID FROM Organizers WHERE organizerName = ?";
+                db.tylerPool.query(getOrganizerIDQuery, [data.organizerName], function(err, organizerRows) {
+                    if (err || organizerRows.length === 0) {
+                        return res.status(400).json({ error: "Failed to get organizer ID." });
+                    }
+                    let organizerID = organizerRows[0].organizerID;
+
+                    // Step 3: Update the event
+                    let updateQuery = `
+                        UPDATE Events 
+                        SET eventName = ?, eventDate = ?, 
+                            venueID = ?, organizerID = ?, 
+                            description = ?, requiresPayment = ?, maxAttendees = ? 
+                        WHERE eventID = ?;
+                    `;
+
+                    db.tylerPool.query(updateQuery, [data.eventName, data.eventDate, venueID, organizerID, data.description, data.requiresPayment, data.maxAttendees, data.eventID], function(updateError) {
+                        if (updateError) {
+                            console.error("❌ Update Error:", updateError);
+                            return res.status(400).json({ error: "Failed to update event." });
+                        }
+
+                        console.log("✅ Event successfully updated!");
+
+                        // Step 4: Retrieve updated event and return it
+                        let selectQuery = `
+                            SELECT e.eventID, e.eventName, e.eventDate, v.venueName, o.organizerName, 
+                                   e.description, e.requiresPayment, e.maxAttendees
+                            FROM Events e
+                            JOIN Venues v ON e.venueID = v.venueID
+                            JOIN Organizers o ON e.organizerID = o.organizerID
+                            WHERE e.eventID = ?;
+                        `;
+                        
+                        db.tylerPool.query(selectQuery, [data.eventID], function(selectError, result) {
+                            if (selectError || result.length === 0) {
+                                return res.status(400).json({ error: "Failed to fetch updated event." });
+                            }
+
+                            res.json({ updatedEvent: result[0] });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
 
-// Start the server
+
+// Delete Event - Handle DELETE request to delete an event
+app.post('/delete-event', function(req, res) {
+    console.log("📌 POST request received for /delete-event");
+    console.log("📌 Received Data:", req.body);
+
+    let eventID = req.body.eventID;
+
+    if (!eventID) {
+        return res.status(400).json({ error: "Missing eventID." });
+    }
+
+    // Delete related data from Attendees_Events and Payments
+    let deleteFromAttendees = `DELETE FROM Attendees_Events WHERE eventID = ?`;
+    let deleteFromPayments = `DELETE FROM Payments WHERE eventID = ?`;
+
+    db.tylerPool.query(deleteFromAttendees, [eventID], function(err) {
+        if (err) {
+            console.error("❌ Error deleting from Attendees_Events:", err);
+            return res.status(500).json({ error: "Failed to delete related attendee records." });
+        }
+
+        db.tylerPool.query(deleteFromPayments, [eventID], function(err) {
+            if (err) {
+                console.error("❌ Error deleting from Payments:", err);
+                return res.status(500).json({ error: "Failed to delete payment records." });
+            }
+
+            // Finally delete from Events table
+            let deleteEventQuery = `DELETE FROM Events WHERE eventID = ?`;
+
+            db.tylerPool.query(deleteEventQuery, [eventID], function(eventError) {
+                if (eventError) {
+                    console.error("❌ Error deleting event:", eventError);
+                    return res.status(500).json({ error: "Failed to delete event." });
+                }
+
+                console.log(`✅ Event with ID ${eventID} successfully deleted.`);
+                res.status(200).json({ success: `Event ID ${eventID} deleted successfully.` });
+            });
+        });
+    });
+});
+
+
+// Start Server
 app.listen(port, () => {
-    console.log(`Server running on http://classwork.engr.oregonstate.edu:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });

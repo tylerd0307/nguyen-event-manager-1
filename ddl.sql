@@ -28,7 +28,7 @@ CREATE TABLE Organizers (
 -- Create Venues table
 -- Stores details about event locations, including capacity constraints.
 CREATE TABLE Venues (
-    venueID INT PRIMARY KEY, -- Manual ID assignment allows external reference control
+    venueID INT AUTO_INCREMENT PRIMARY KEY, -- Manual ID assignment allows external reference control
     venueName VARCHAR(100) NOT NULL,
     address VARCHAR(255) NOT NULL,
     capacity INT NOT NULL, -- Ensures events do not exceed venue limits
@@ -94,16 +94,16 @@ INSERT INTO Organizers (organizerName, email, phoneNumber) VALUES
 
 -- Insert Venues with specific IDs
 INSERT INTO Venues (venueID, venueName, address, capacity, contactNumber) VALUES
-(101, 'Grand Hall', '123 Conference St', 500, '555-1111'),
-(102, 'Meeting Room A', '456 Office Rd', 100, '555-2222'),
-(103, 'Tech Lab', '789 Innovation Dr', 200, '555-3333');
+(1, 'Grand Hall', '123 Conference St', 500, '555-1111'),
+(2, 'Meeting Room A', '456 Office Rd', 100, '555-2222'),
+(3, 'Tech Lab', '789 Innovation Dr', 200, '555-3333');
 
 -- Insert Events with matching venueIDs
 INSERT INTO Events (eventName, eventDate, venueID, organizerID, description, requiresPayment, maxAttendees) VALUES
-('Tech Conference', '2024-04-01', 101, 1, 'A conference on the latest tech trends.', 0, 200),
-('Marketing Meetup', '2024-05-10', 102, 2, NULL, 1, 100),
-('Developer Workshop', '2025-06-15', 103, 1, 'A workshop to learn new coding techniques.', 1, 150),
-('AI Symposium', '2025-07-20', 101, 3, 'A discussion on AI advancements.', 1, 250);
+('Tech Conference', '2024-04-01', 1, 1, 'A conference on the latest tech trends.', 0, 200),
+('Marketing Meetup', '2024-05-10', 2, 2, NULL, 1, 100),
+('Developer Workshop', '2025-06-15', 3, 1, 'A workshop to learn new coding techniques.', 1, 150),
+('AI Symposium', '2025-07-20', 1, 3, 'A discussion on AI advancements.', 1, 250);
 
 -- Insert Attendees
 INSERT INTO Attendees (firstName, lastName, email, phoneNumber) VALUES
@@ -131,4 +131,4 @@ SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 -- Ensure future Venues have proper IDs
-ALTER TABLE Venues AUTO_INCREMENT = 104;
+-- ALTER TABLE Venues AUTO_INCREMENT = 104;
