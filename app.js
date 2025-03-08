@@ -143,7 +143,89 @@ app.post('/update-event', function(req, res) {
         return res.status(400).json({ error: "Missing required fields." });
     }
 
-    // ... (rest of update-event code remains the same)
+    // Step 1: Check if venue exists, insert if not
+    let venueQuery = `
+        INSERT INTO Venues (venueName, address, capacity)
+        SELECT ?, 'Unknown Address', 100
+        WHERE NOT EXISTS (SELECT 1 FROM Venues WHERE venueName = ?) 
+        LIMIT 1;
+    `;
+    db.nicholasPool.query(venueQuery, [data.venueName, data.venueName], function(venueError) {
+        if (venueError) {
+            console.error("❌ Venue Insert Error:", venueError);
+            return res.status(400).json({ error: "Failed to insert venue." });
+        }
+
+        // Get venue ID
+        let getVenueIDQuery = "SELECT venueID FROM Venues WHERE venueName = ?";
+        db.nicholasPool.query(getVenueIDQuery, [data.venueName], function(err, venueRows) {
+            if (err || venueRows.length === 0) {
+                console.error("❌ Venue Lookup Error:", err);
+                return res.status(400).json({ error: "Failed to get venue ID." });
+            }
+            let venueID = venueRows[0].venueID;
+
+            // Step 2: Check if organizer exists, insert if not
+            let organizerQuery = `
+                INSERT INTO Organizers (organizerName, email)
+                SELECT ?, 'unknown@example.com'
+                WHERE NOT EXISTS (SELECT 1 FROM Organizers WHERE organizerName = ?) 
+                LIMIT 1;
+            `;
+
+            db.nicholasPool.query(organizerQuery, [data.organizerName, data.organizerName], function(organizerError) {
+                if (organizerError) {
+                    console.error("❌ Organizer Insert Error:", organizerError);
+                    return res.status(400).json({ error: "Failed to insert organizer." });
+                }
+
+                // Get organizer ID
+                let getOrganizerIDQuery = "SELECT organizerID FROM Organizers WHERE organizerName = ?";
+                db.nicholasPool.query(getOrganizerIDQuery, [data.organizerName], function(err, organizerRows) {
+                    if (err || organizerRows.length === 0) {
+                        return res.status(400).json({ error: "Failed to get organizer ID." });
+                    }
+                    let organizerID = organizerRows[0].organizerID;
+
+                    // Step 3: Update the event
+                    let updateQuery = `
+                        UPDATE Events 
+                        SET eventName = ?, eventDate = ?, 
+                            venueID = ?, organizerID = ?, 
+                            description = ?, requiresPayment = ?, maxAttendees = ? 
+                        WHERE eventID = ?;
+                    `;
+
+                    db.nicholasPool.query(updateQuery, [data.eventName, data.eventDate, venueID, organizerID, data.description, data.requiresPayment, data.maxAttendees, data.eventID], function(updateError) {
+                        if (updateError) {
+                            console.error("❌ Update Error:", updateError);
+                            return res.status(400).json({ error: "Failed to update event." });
+                        }
+
+                        console.log("✅ Event successfully updated!");
+
+                        // Step 4: Retrieve updated event and return it
+                        let selectQuery = `
+                            SELECT e.eventID, e.eventName, e.eventDate, v.venueName, o.organizerName, 
+                                   e.description, e.requiresPayment, e.maxAttendees
+                            FROM Events e
+                            JOIN Venues v ON e.venueID = v.venueID
+                            JOIN Organizers o ON e.organizerID = o.organizerID
+                            WHERE e.eventID = ?;
+                        `;
+                        
+                        db.nicholasPool.query(selectQuery, [data.eventID], function(selectError, result) {
+                            if (selectError || result.length === 0) {
+                                return res.status(400).json({ error: "Failed to fetch updated event." });
+                            }
+
+                            res.json({ updatedEvent: result[0] });
+                        });
+                    });
+                });
+            });
+        });
+    });
 });
 
 // Delete Event - Handle DELETE request to delete an event
