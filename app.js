@@ -344,6 +344,98 @@ app.post('/delete-attendee', function(req, res) {
     });
 });
 
+// Get all organizers
+app.get('/organizers', function(req, res) {
+    let organizerQuery = `SELECT * FROM Organizers`; 
+
+    db.tylerPool.query(organizerQuery, function(error, organizerRows) { 
+        if (error) { 
+            console.log("Organizer Query Error:", error); 
+            res.sendStatus(500); 
+            return; 
+        } 
+
+        res.status(200).render("organizers", {  // Render the organizers.handlebars template
+            data: organizerRows, 
+        }); 
+    }); 
+});
+// Add a new organizer
+app.post("/add-organizer", (req, res) => {
+    const { organizerName, email, phone } = req.body; // Changed from name to organizerName to match your form
+    if (!organizerName || !email) { // Phone is optional, so removed from required check.
+        return res.status(400).json({ error: "Organizer Name and Email are required" });
+    }
+
+    const query = "INSERT INTO Organizers (organizerName, email, phoneNumber) VALUES (?, ?, ?)";
+    db.tylerPool.query(query, [organizerName, email, phone], (err, result) => {
+        if (err) {
+            console.error("Error adding organizer: ", err);
+            res.status(500).json({ error: "Database error" });
+            return;
+        }
+        res.status(201).json({ message: "Organizer added successfully", id: result.insertId });
+    });
+});
+
+app.post("/update-organizer", (req, res) => {
+    const { organizerID, newOrganizerName, newOrganizerEmail, newOrganizerPhone } = req.body;
+
+    // Basic validation to check if required fields are present
+    if (!organizerID || !newOrganizerName || !newOrganizerEmail) {
+        return res.status(400).json({ error: "Missing required fields (organizerID, newOrganizerName, newOrganizerEmail)." });
+    }
+
+    // SQL query to update an organizer
+    const query = `
+        UPDATE Organizers 
+        SET organizerName = ?, 
+            email = ?, 
+            phoneNumber = ? 
+        WHERE organizerID = ?;
+    `;
+
+    // Execute the query with the provided data
+    db.tylerPool.query(
+        query,
+        [newOrganizerName, newOrganizerEmail, newOrganizerPhone, organizerID],
+        function (error, result) {
+            if (error) {
+                console.error("Error updating organizer:", error);
+                return res.status(500).json({ error: "Failed to update organizer." });
+            }
+
+            // Check if any rows were affected by the update
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "Organizer not found." });
+            }
+
+            console.log("Organizer updated successfully");
+            res.json({ success: "Organizer updated successfully" });
+        }
+    );
+});
+
+app.post("/delete-organizer", (req, res) => {
+    const { organizerID } = req.body;
+    if (!organizerID) {
+        return res.status(400).json({ error: "Missing organizerID." });
+    }
+
+    const query = `
+        DELETE FROM Organizers 
+        WHERE organizerID = ?;
+    `;
+
+    db.tylerPool.query(query, [organizerID], (err, result) => {
+        if (err) {
+            console.error("Error deleting organizer: ", err);
+            res.status(500).json({ error: "Database error" });
+            return;
+        }
+        res.json({ message: "Organizer deleted successfully" });
+    });
+});
 
 // Start Server
 app.listen(port, () => {

@@ -22,7 +22,7 @@
             <td>{{this.organizerID}}</td>
             <td>{{this.organizerName}}</td>
             <td>{{this.email}}</td>
-            <td>{{this.phone}}</td>
+            <td>{{#if this.phoneNumber}}{{this.phoneNumber}}{{else}}NULL{{/if}}</td>
             <td><a href="#" onclick="editOrganizer('{{this.organizerID}}')">Edit</a> | <a href="#" onclick="deleteOrganizer('{{this.organizerID}}')">Delete</a></td>
         </tr>
         {{/each}}
@@ -60,5 +60,12 @@
         </select><br>
         <input type="submit" value="Delete Organizer">
     </form>
+   
+    <script src="/js/organizers/add-organizer.js"></script>
+    <script src="/js/organizers/update-organizer.js"></script>
+    <script src="/js/organizers/delete-organizer.js"></script>
+    
+
+
 </body>
 </html>
