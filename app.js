@@ -4,7 +4,7 @@ var db = require('./db-connector');
 var express = require('express');
 var path = require('path');
 var app = express();
-var port = process.env.PORT || 9011;
+var port = process.env.PORT || 9010;
 
 // Import Moment.js
 const moment = require('moment');
@@ -683,6 +683,141 @@ app.post("/delete-venue", (req, res) => {
 
         console.log("Venue deleted successfully");
         res.json({ success: "Venue deleted successfully" });
+    });
+});
+
+/// GET /attendees_events - Display all attendee-event registrations
+app.get('/attendees_events', function(req, res) {
+    // Disable caching
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
+    const registrationsQuery = `
+        SELECT e.eventID, e.eventName, a.attendeeID, a.firstName, a.lastName, ae.registrationStatus
+        FROM Attendees_Events ae
+        JOIN Events e ON ae.eventID = e.eventID
+        JOIN Attendees a ON ae.attendeeID = a.attendeeID;
+    `;
+    const eventsQuery = `SELECT eventID, eventName FROM Events`;
+    const attendeesQuery = `SELECT attendeeID, firstName, lastName FROM Attendees`;
+
+    db.tylerPool.query(registrationsQuery, function(error, registrationResults) {
+        if (error) {
+            console.error("Error fetching registrations:", error);
+            res.status(500).json({ error: "Database error while retrieving registrations" });
+            return;
+        }
+
+        db.tylerPool.query(eventsQuery, function(error, eventResults) {
+            if (error) {
+                console.error("Error fetching events:", error);
+                res.status(500).json({ error: "Database error while retrieving events" });
+                return;
+            }
+
+            db.tylerPool.query(attendeesQuery, function(error, attendeeResults) {
+                if (error) {
+                    console.error("Error fetching attendees:", error);
+                    res.status(500).json({ error: "Database error while retrieving attendees" });
+                    return;
+                }
+
+                res.render('attendees_events', {
+                    registrations: registrationResults,
+                    events: eventResults,
+                    attendees: attendeeResults
+                });
+            });
+        });
+    });
+});
+
+app.post('/add-attendee-event', (req, res) => {
+    const { eventName, firstName, lastName, registrationStatus } = req.body;
+
+    // Basic validation to check if required fields are present
+    if (!eventName || !firstName || !lastName || !registrationStatus) {
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    // SQL query to insert a new attendee-event registration
+    // using eventName, firstName, and lastName to look up eventID and attendeeID
+    const query = `
+        INSERT INTO Attendees_Events (eventID, attendeeID, registrationStatus) 
+        SELECT e.eventID, a.attendeeID, ?
+        FROM Events e, Attendees a
+        WHERE e.eventName = ? AND a.firstName = ? AND a.lastName = ?
+        ON DUPLICATE KEY UPDATE registrationStatus = VALUES(registrationStatus);
+    `;
+
+    db.tylerPool.query(
+        query, 
+        [registrationStatus, eventName, firstName, lastName], 
+        (err, result) => {
+            if (err) {
+                console.error("Error adding/updating registration:", err);
+                return res.status(500).json({ error: "Failed to add/update registration." });
+            }
+
+            console.log("Registration added/updated successfully");
+            res.json({ success: "Registration added/updated successfully" });
+        }
+    );
+});
+
+app.post('/update-attendee-event', (req, res) => {
+    const { eventName, firstName, lastName, registrationStatus } = req.body;
+
+    // Basic validation to check if required fields are present
+    if (!eventName || !firstName || !lastName || !registrationStatus) {
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    // SQL query to update an attendee-event registration
+    // using eventName, firstName, and lastName to identify the registration
+    const query = `
+        UPDATE Attendees_Events 
+        SET registrationStatus = ?
+        WHERE eventID = (SELECT eventID FROM Events WHERE eventName = ?)
+          AND attendeeID = (SELECT attendeeID FROM Attendees WHERE firstName = ? AND lastName = ?);
+    `;
+
+    db.tylerPool.query(
+        query, 
+        [registrationStatus, eventName, firstName, lastName], 
+        (err, result) => {
+            if (err) {
+                console.error("Error updating registration:", err);
+                return res.status(500).json({ error: "Failed to update registration." });
+            }
+
+            console.log("Registration updated successfully");
+            res.json({ success: "Registration updated successfully" });
+        }
+    );
+});
+
+app.post('/delete-attendee-event', (req, res) => {
+    const { eventID, attendeeID } = req.body;
+
+    if (!eventID || !attendeeID) {
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    const query = `
+        DELETE FROM Attendees_Events 
+        WHERE eventID = ? AND attendeeID = ?;
+    `;
+
+    db.tylerPool.query(query, [eventID, attendeeID], (err, result) => {
+        if (err) {
+            console.error("Error deleting registration:", err);
+            return res.status(500).json({ error: "Failed to delete registration." });
+        }
+
+        console.log("Registration deleted successfully");
+        res.json({ success: "Registration deleted successfully" });
     });
 });
 
