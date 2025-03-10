@@ -580,6 +580,112 @@ app.post("/delete-payment", (req, res) => {
     });
 });
 
+// GET /venues - Display all venues
+app.get('/venues', function(req, res) {
+    const query = `SELECT * FROM Venues`;
+
+    db.tylerPool.query(query, function(error, venueRows) {
+        if (error) {
+            console.log("Venue Query Error:", error);
+            res.sendStatus(500);
+            return;
+        }
+
+        res.status(200).render("venues", {
+            data: venueRows
+        });
+    });
+});
+
+// POST /add-venue - Add a new venue
+app.post("/add-venue", (req, res) => {
+    const { venueName, address, capacity, contactNumber } = req.body;
+    if (!venueName || !address || !capacity || !contactNumber) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const query = "INSERT INTO Venues (venueName, address, capacity, contactNumber) VALUES (?, ?, ?, ?)";
+    db.tylerPool.query(query, [venueName, address, capacity, contactNumber], (err, result) => {
+        if (err) {
+            console.error("Error adding venue: ", err);
+            res.status(500).json({ error: "Database error" });
+            return;
+        }
+        res.status(201).json({ message: "Venue added successfully", id: result.insertId });
+    });
+});
+
+app.post("/update-venue", (req, res) => {
+    const { venueID, venueName, address, capacity, contactNumber } = req.body;
+    console.log("Received update-venue request:", req.body);
+
+    // Basic validation to check if required fields are present
+    if (!venueID || !venueName || !address || !capacity || !contactNumber) {
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    // SQL query to update a venue
+    const query = `
+        UPDATE Venues 
+        SET venueName = ?, 
+            address = ?, 
+            capacity = ?,
+            contactNumber = ?  
+        WHERE venueID = ?;
+    `;
+
+    // Execute the query with the provided data
+    db.tylerPool.query(
+        query,
+        [venueName, address, capacity, contactNumber, venueID],
+        (err, result) => {
+            if (err) {
+                console.error("Error updating venue:", err);
+                return res.status(500).json({ error: "Failed to update venue." });
+            }
+
+            // Check if any rows were affected by the update
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "Venue not found." });
+            }
+
+            console.log("Venue updated successfully");
+            res.json({ success: "Venue updated successfully" });
+        }
+    );
+});
+
+app.post("/delete-venue", (req, res) => {
+    const { venueID } = req.body;
+
+    // Basic validation to check if venueID is present
+    if (!venueID) {
+        return res.status(400).json({ error: "Missing venueID." });
+    }
+
+    // SQL query to delete a venue
+    const query = `
+        DELETE FROM Venues 
+        WHERE venueID = ?;
+    `;
+
+    // Execute the query with the provided data
+    db.tylerPool.query(query, [venueID], (err, result) => {
+        if (err) {
+            console.error("Error deleting venue:", err);
+            return res.status(500).json({ error: "Failed to delete venue." });
+        }
+
+        // Check if any rows were affected by the delete
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Venue not found." });
+        }
+
+        console.log("Venue deleted successfully");
+        res.json({ success: "Venue deleted successfully" });
+    });
+});
+
 // Start Server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
