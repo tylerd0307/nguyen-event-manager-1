@@ -124,10 +124,10 @@ DELETE FROM Organizers WHERE organizerID = :organizerIDInput;
 --------------------------------
 
 -- SELECT: Retrieve all payments with event and attendee names
-SELECT p.paymentID, e.eventName, a.firstName, a.lastName, p.paymentDate, p.paymentStatus
+SELECT p.paymentID, e.eventName, a.firstName, a.lastName, DATE_FORMAT(p.paymentDate, '%Y-%m-%d') AS paymentDate, p.paymentStatus
 FROM Payments p
-JOIN Events e ON p.eventID = e.eventID
-JOIN Attendees a ON p.attendeeID = a.attendeeID;
+LEFT JOIN Events e ON p.eventID = e.eventID
+JOIN Attendees a ON p.attendeeID = a.attendeeID
 
 -- INSERT: Record a new payment using event and attendee names
 INSERT INTO Payments (eventID, attendeeID, paymentDate, paymentStatus) 

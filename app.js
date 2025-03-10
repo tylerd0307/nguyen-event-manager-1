@@ -6,12 +6,21 @@ var path = require('path');
 var app = express();
 var port = process.env.PORT || 9011;
 
+// Import Moment.js
+const moment = require('moment');
+
 // Handlebars Setup
 var exphbs = require('express-handlebars');
 app.engine("handlebars", exphbs.engine({
     defaultLayout: "main",
-    layoutsDir: path.join(__dirname, "views/layouts")
+    layoutsDir: path.join(__dirname, "views/layouts"),
+    helpers: {
+        formatDate: function (date, format) {
+            return moment(date).format(format);
+        }
+    }
 }));
+
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
 
@@ -434,6 +443,140 @@ app.post("/delete-organizer", (req, res) => {
             return;
         }
         res.json({ message: "Organizer deleted successfully" });
+    });
+});
+
+// GET all payments
+app.get('/payments', function(req, res) {
+    const paymentsQuery = `
+        SELECT p.paymentID, e.eventName, a.firstName, a.lastName, p.paymentDate, p.paymentStatus
+        FROM Payments p
+        LEFT JOIN Events e ON p.eventID = e.eventID
+        JOIN Attendees a ON p.attendeeID = a.attendeeID
+    `;
+    const eventsQuery = `SELECT eventID, eventName FROM Events`;
+    const attendeesQuery = `SELECT attendeeID, firstName, lastName FROM Attendees`;
+
+    db.tylerPool.query(paymentsQuery, function(error, paymentResults) {
+        if (error) {
+            console.error("Error fetching payments:", error);
+            res.status(500).json({ error: "Database error while retrieving payments" });
+            return;
+        }
+
+        db.tylerPool.query(eventsQuery, function(error, eventResults) {
+            if (error) {
+                console.error("Error fetching events:", error);
+                res.status(500).json({ error: "Database error while retrieving events" });
+                return;
+            }
+
+            db.tylerPool.query(attendeesQuery, function(error, attendeeResults) {
+                if (error) {
+                    console.error("Error fetching attendees:", error);
+                    res.status(500).json({ error: "Database error while retrieving attendees" });
+                    return;
+                }
+
+                res.render('payments', {
+                    data: paymentResults,
+                    events: eventResults,
+                    attendees: attendeeResults
+                });
+            });
+        });
+    });
+});
+
+// POST add a new payment
+app.post("/add-payment", (req, res) => {
+    const { eventID, attendeeID, paymentDate, paymentStatus } = req.body;
+    console.log("Received add-payment request:", req.body);
+    if (!eventID || !attendeeID || !paymentDate || !paymentStatus) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const query = `
+        INSERT INTO Payments (eventID, attendeeID, paymentDate, paymentStatus) 
+        VALUES (?, ?, ?, ?);
+    `;
+    db.tylerPool.query(query, [eventID, attendeeID, paymentDate, paymentStatus], (err, result) => {
+        if (err) {
+            console.error("Error adding payment:", err);
+            res.status(500).json({ error: "Database error" });
+            return;
+        }
+        res.status(201).json({ message: "Payment added successfully", id: result.insertId });
+    });
+});
+
+app.post("/update-payment", (req, res) => {
+    const { paymentID, newEventID, newAttendeeID, newPaymentDate, newPaymentStatus } = req.body;
+
+    // Basic validation to check if required fields are present
+    if (!paymentID || !newEventID || !newAttendeeID || !newPaymentDate || !newPaymentStatus) {
+        return res.status(400).json({ error: "Missing required fields." });
+    }
+
+    // SQL query to update a payment
+    const query = `
+        UPDATE Payments 
+        SET eventID = ?, 
+            attendeeID = ?, 
+            paymentDate = ?, 
+            paymentStatus = ? 
+        WHERE paymentID = ?;
+    `;
+
+    // Execute the query with the provided data
+    db.tylerPool.query(
+        query,
+        [newEventID, newAttendeeID, newPaymentDate, newPaymentStatus, paymentID],
+        (err, result) => {
+            if (err) {
+                console.error("Error updating payment:", err);
+                return res.status(500).json({ error: "Failed to update payment." });
+            }
+
+            // Check if any rows were affected by the update
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "Payment not found." });
+            }
+
+            console.log("Payment updated successfully");
+            res.json({ success: "Payment updated successfully" });
+        }
+    );
+});
+
+app.post("/delete-payment", (req, res) => {
+    const { paymentID } = req.body;
+
+    // Basic validation to check if paymentID is present
+    if (!paymentID) {
+        return res.status(400).json({ error: "Missing paymentID." });
+    }
+
+    // SQL query to delete a payment
+    const query = `
+        DELETE FROM Payments 
+        WHERE paymentID = ?;
+    `;
+
+    // Execute the query with the provided data
+    db.tylerPool.query(query, [paymentID], (err, result) => {
+        if (err) {
+            console.error("Error deleting payment:", err);
+            return res.status(500).json({ error: "Failed to delete payment." });
+        }
+
+        // Check if any rows were affected by the delete
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Payment not found." });
+        }
+
+        console.log("Payment deleted successfully");
+        res.json({ success: "Payment deleted successfully" });
     });
 });
 
