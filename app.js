@@ -116,81 +116,63 @@ app.post('/add-event', async (req, res) => {
 });
 
 // Update Event - Handle POST request to update an event
+// POST /update-attendee - Update an attendee
 app.post('/update-event', async (req, res) => {
     console.log("📌 POST request received for /update-event");
     console.log("📌 Received Data:", req.body);
 
     const data = req.body;
 
-    if (!data.eventID || !data.eventName || !data.eventDate) {
+    if (!data.eventID || !data.eventName || !data.eventDate || !data.venueName || !data.organizerName) {
         console.error("❌ Missing required fields!");
         return res.status(400).json({ error: "Missing required fields." });
     }
 
     try {
-        // Step 1: Check if venue exists, insert if not
-        await db.tylerPool.query(`
-            INSERT INTO Venues (venueName, address, capacity)
-            SELECT ?, 'Unknown Address', 100
-            WHERE NOT EXISTS (SELECT 1 FROM Venues WHERE venueName = ?) 
-            LIMIT 1;
-        `, [data.venueName, data.venueName]);
-
-        // Get venue ID
+        // Step 1: Get venueID and organizerID
         const [venueRows] = await db.tylerPool.query("SELECT venueID FROM Venues WHERE venueName = ?", [data.venueName]);
-        if (!venueRows || venueRows.length === 0) {
-            console.error("❌ Venue Lookup Error");
-            return res.status(400).json({ error: "Failed to get venue ID." });
-        }
-        const venueID = venueRows[0].venueID;
-
-        // Step 2: Check if organizer exists, insert if not
-        await db.tylerPool.query(`
-            INSERT INTO Organizers (organizerName, email)
-            SELECT ?, 'unknown@example.com'
-            WHERE NOT EXISTS (SELECT 1 FROM Organizers WHERE organizerName = ?) 
-            LIMIT 1;
-        `, [data.organizerName, data.organizerName]);
-
-        // Get organizer ID
         const [organizerRows] = await db.tylerPool.query("SELECT organizerID FROM Organizers WHERE organizerName = ?", [data.organizerName]);
-        if (!organizerRows || organizerRows.length === 0) {
-            return res.status(400).json({ error: "Failed to get organizer ID." });
+
+        if (venueRows.length === 0 || organizerRows.length === 0) {
+            console.error("❌ Venue or Organizer not found!");
+            return res.status(404).json({ error: "Venue or Organizer not found." });
         }
+
+        const venueID = venueRows[0].venueID;
         const organizerID = organizerRows[0].organizerID;
 
-        // Step 3: Update the event
-        await db.tylerPool.query(`
-            UPDATE Events 
-            SET eventName = ?, eventDate = ?, 
-                venueID = ?, organizerID = ?, 
-                description = ?, requiresPayment = ?, maxAttendees = ? 
-            WHERE eventID = ?;
-        `, [data.eventName, data.eventDate, venueID, organizerID, data.description, data.requiresPayment, data.maxAttendees, data.eventID]);
+        // Step 2: Update the event
+        await db.tylerPool.query(
+            `
+            UPDATE Events
+            SET eventName = ?,
+                eventDate = ?,
+                venueID = ?,
+                organizerID = ?,
+                description = ?,
+                requiresPayment = ?,
+                maxAttendees = ?
+            WHERE eventID = ?
+            `,
+            [
+                data.eventName,
+                data.eventDate,
+                venueID,
+                organizerID,
+                data.description,
+                data.requiresPayment,
+                data.maxAttendees,
+                data.eventID,
+            ]
+        );
 
-        console.log("✅ Event successfully updated!");
-
-        // Step 4: Retrieve updated event and return it
-        const [selectResult] = await db.tylerPool.query(`
-            SELECT e.eventID, e.eventName, e.eventDate, v.venueName, o.organizerName, 
-                   e.description, e.requiresPayment, e.maxAttendees
-            FROM Events e
-            JOIN Venues v ON e.venueID = v.venueID
-            JOIN Organizers o ON e.organizerID = o.organizerID
-            WHERE e.eventID = ?;
-        `, [data.eventID]);
-
-        if (!selectResult || selectResult.length === 0) {
-            return res.status(400).json({ error: "Failed to fetch updated event." });
-        }
-
-        res.json({ updatedEvent: selectResult[0] });
+        console.log("✅ Event updated successfully!");
+        res.json({ success: "Event updated successfully!" });
     } catch (error) {
-        console.error("❌ Update Error:", error);
-        return res.status(400).json({ error: "Failed to update event." });
+        console.error("❌ Update Event Error:", error);
+        return res.status(500).json({ error: "Failed to update event." });
     }
 });
-
 // Delete Event - Handle DELETE request to delete an event
 app.post('/delete-event', async (req, res) => {
     console.log("📌 POST request received for /delete-event");
@@ -254,62 +236,34 @@ app.post('/add-attendee', async (req, res) => {
 });
 
 // POST /update-attendee - Update an attendee
-app.post('/update-event', async (req, res) => {
-    console.log("📌 POST request received for /update-event");
-    console.log("📌 Received Data:", req.body);
-
+app.post('/update-attendee', async (req, res) => {
+    console.log("Update Attendee Request Received");
     const data = req.body;
+    console.log("Received data:", data);
 
-    if (!data.eventID || !data.eventName || !data.eventDate || !data.venueName || !data.organizerName) {
-        console.error("❌ Missing required fields!");
-        return res.status(400).json({ error: "Missing required fields." });
+    // Validate that required fields are present
+    if (!data.attendeeID || !data.newAttendeeFirstName || !data.newAttendeeLastName || !data.newAttendeeEmail) {
+        return res.status(400).json({ error: "Missing required fields (attendeeID, newAttendeeFirstName, newAttendeeLastName, newAttendeeEmail)." });
     }
 
     try {
-        // Step 1: Get venueID and organizerID
-        const [venueRows] = await db.tylerPool.query("SELECT venueID FROM Venues WHERE venueName = ?", [data.venueName]);
-        const [organizerRows] = await db.tylerPool.query("SELECT organizerID FROM Organizers WHERE organizerName = ?", [data.organizerName]);
+        await db.tylerPool.query(`
+            UPDATE Attendees 
+            SET firstName = ?, 
+                lastName = ?, 
+                email = ?, 
+                phoneNumber = ? 
+            WHERE attendeeID = ?;
+        `, [data.newAttendeeFirstName, data.newAttendeeLastName, data.newAttendeeEmail, data.newAttendeePhone, data.attendeeID]);
 
-        if (venueRows.length === 0 || organizerRows.length === 0) {
-            console.error("❌ Venue or Organizer not found!");
-            return res.status(404).json({ error: "Venue or Organizer not found." });
-        }
-
-        const venueID = venueRows[0].venueID;
-        const organizerID = organizerRows[0].organizerID;
-
-        // Step 2: Update the event
-        await db.tylerPool.query(
-            `
-            UPDATE Events
-            SET eventName = ?,
-                eventDate = ?,
-                venueID = ?,
-                organizerID = ?,
-                description = ?,
-                requiresPayment = ?,
-                maxAttendees = ?
-            WHERE eventID = ?
-            `,
-            [
-                data.eventName,
-                data.eventDate,
-                venueID,
-                organizerID,
-                data.description,
-                data.requiresPayment,
-                data.maxAttendees,
-                data.eventID,
-            ]
-        );
-
-        console.log("✅ Event updated successfully!");
-        res.json({ success: "Event updated successfully!" });
+        console.log("✅ Attendee updated successfully!");
+        res.status(200).json({ success: "Attendee updated successfully!" });
     } catch (error) {
-        console.error("❌ Update Event Error:", error);
-        return res.status(500).json({ error: "Failed to update event." });
+        console.error("❌ Error updating attendee:", error);
+        return res.status(500).json({ error: "Failed to update attendee." });
     }
 });
+
 
 // POST /delete-attendee - Delete an attendee
 app.post('/delete-attendee', async (req, res) => {
