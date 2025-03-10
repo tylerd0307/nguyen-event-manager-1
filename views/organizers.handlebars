@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Manage Organizers</h1>
-    <a href="index.html">Back to Home</a>
+    <a href="/">Back to Home</a>
 
     <h2>Browse Organizers</h2>
     <table border="1">
@@ -23,7 +23,7 @@
             <td>{{this.organizerName}}</td>
             <td>{{this.email}}</td>
             <td>{{#if this.phoneNumber}}{{this.phoneNumber}}{{else}}NULL{{/if}}</td>
-            <td><a href="#" onclick="editOrganizer('{{this.organizerID}}')">Edit</a> | <a href="#" onclick="deleteOrganizer('{{this.organizerID}}')">Delete</a></td>
+            <td><a href="#" onclick="deleteOrganizer('{{this.organizerID}}')">Delete</a></td>
         </tr>
         {{/each}}
     </table>

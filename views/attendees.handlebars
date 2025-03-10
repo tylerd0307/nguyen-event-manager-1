@@ -25,7 +25,7 @@
             <td>{{this.lastName}}</td>
             <td>{{this.email}}</td>
             <td>{{#if this.phoneNumber}}{{this.phoneNumber}}{{else}}NULL{{/if}}</td>
-            <td><a href="#" onclick="editAttendee('{{this.attendeeID}}')">Edit</a> | <a href="#" onclick="deleteAttendee('{{this.attendeeID}}')">Delete</a></td>
+            <td><a href="#" onclick="deleteAttendee('{{this.attendeeID}}')">Delete</a></td>
         </tr>
         {{/each}}
     </table>

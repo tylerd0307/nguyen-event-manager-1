@@ -1,4 +1,4 @@
-const mysql = require ('mysql');
+const mysql = require ('mysql2');
 
 
 // Create a connection pool using Tyler's credentials
@@ -8,7 +8,7 @@ const tylerPool = mysql.createPool({
   user: 'cs340_nguyety4',                  
   password: '7034',                      
   database: 'cs340_nguyety4'                
-});
+}).promise();
 
 // Create a connection pool using Nicholas's credentials
 const nicholasPool = mysql.createPool({
@@ -17,7 +17,7 @@ const nicholasPool = mysql.createPool({
   user: 'cs340_nguynich',           
   password: '2035',        
   database: 'cs340_nguynich'           
-});
+}).promise();
 
 module.exports = {
   tylerPool: tylerPool,

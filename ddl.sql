@@ -92,11 +92,11 @@ INSERT INTO Organizers (organizerName, email, phoneNumber) VALUES
 ('Jane Doe', 'jane.doe@gmail.com', '555-6234'),
 ('LeBron James', 'lebron.james@gmail.com', '555-7232');
 
--- Insert Venues with specific IDs
-INSERT INTO Venues (venueID, venueName, address, capacity, contactNumber) VALUES
-(1, 'Grand Hall', '123 Conference St', 500, '555-1111'),
-(2, 'Meeting Room A', '456 Office Rd', 100, '555-2222'),
-(3, 'Tech Lab', '789 Innovation Dr', 200, '555-3333');
+-- Insert Venues (without venueID)
+INSERT INTO Venues (venueName, address, capacity, contactNumber) VALUES
+('Grand Hall', '123 Conference St', 500, '555-1111'),
+('Meeting Room A', '456 Office Rd', 100, '555-2222'),
+('Tech Lab', '789 Innovation Dr', 200, '555-3333');
 
 -- Insert Events with matching venueIDs
 INSERT INTO Events (eventName, eventDate, venueID, organizerID, description, requiresPayment, maxAttendees) VALUES

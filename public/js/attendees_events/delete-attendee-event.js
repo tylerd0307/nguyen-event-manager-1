@@ -1,24 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log(window.deleteEventRegistration)
     // Function to handle deletion from the table link
-    window.deleteRegistration = function(eventID, attendeeID) {
+    window.deleteEventRegistration = function (eventID, attendeeID) {
         if (confirm("Are you sure you want to delete this registration?")) {
-            // Fetch the event and attendee details using their IDs
-            Promise.all([
-                fetch(`/get-event-details?eventID=${eventID}`).then(res => res.json()),
-                fetch(`/get-attendee-details?attendeeID=${attendeeID}`).then(res => res.json())
-            ])
-            .then(([eventDetails, attendeeDetails]) => {
-                const eventName = eventDetails.eventName;
-                const firstName = attendeeDetails.firstName;
-                const lastName = attendeeDetails.lastName;
-
-                fetch('/delete-attendee-event', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ eventName, firstName, lastName }),
-                })
+            fetch('/delete-attendee-event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ eventID, attendeeID }), // Send eventID and attendeeID
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -34,16 +25,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.error('Error deleting registration:', error);
                     alert("Error deleting registration. Please try again.");
                 });
-            })
-            .catch(error => {
-                console.error("Error fetching event or attendee details:", error);
-                alert("Error deleting registration. Please try again.");
-            });
         }
     };
 
+
     // Function to handle deletion from the form
-    const deleteRegistrationForm = document.getElementById("deleteRegistrationForm");
+    const deleteRegistrationForm = document.querySelector("#deleteRegistrationForm");
 
     if (deleteRegistrationForm) { // Check if the form exists before adding listener
         deleteRegistrationForm.addEventListener("submit", async function (event) {

@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Manage Events</h1>
-    <a href="index.html">Back to Home</a>
+    <a href="/">Back to Home</a>
 
     <div id="browse">
         <h2>Browse Events</h2>
@@ -26,15 +26,13 @@
             <tr data-value="{{this.eventID}}">
                 <td>{{this.eventID}}</td>
                 <td>{{this.eventName}}</td>
-                <td>{{this.eventDate}}</td>
+                <td>{{formatDate this.eventDate 'YYYY-MM-DD'}}</td>
                 <td>{{this.venueName}}</td>
                 <td>{{this.organizerName}}</td>
                 <td>{{#if this.description}}{{this.description}}{{else}}NULL{{/if}}</td>
                 <td>{{#if this.requiresPayment}}Yes{{else}}No{{/if}}</td>
                 <td>{{this.maxAttendees}}</td>
-                <td>
-                    <button onclick="deleteEvent('{{this.eventID}}')">Delete</button>
-                </td>
+                <td><a href="#" onclick="deleteEvent('{{this.eventID}}')">Delete</a></td>
             </tr>
             {{/each}}
         </table>
@@ -50,26 +48,20 @@
             <input type="date" id="eventDate" name="eventDate" required><br>
 
             <label for="venueSelect">Select Venue:</label>
-            <select id="venueSelect" name="venueSelect">
-                <option value="">-- Select Existing Venue --</option>
+            <select id="venueSelect" name="venueName" required>
+                <option value="">-- Select Venue --</option>
                 {{#each venues}}
                 <option value="{{this.venueName}}">{{this.venueName}}</option>
                 {{/each}}
             </select><br>
 
-            <label for="newVenue">Or Enter New Venue:</label>
-            <input type="text" id="newVenue" name="newVenue"><br>
-
             <label for="organizerSelect">Select Organizer:</label>
-            <select id="organizerSelect" name="organizerSelect">
-                <option value="">-- Select Existing Organizer --</option>
+            <select id="organizerSelect" name="organizerName" required>
+                <option value="">-- Select Organizer --</option>
                 {{#each organizers}}
                 <option value="{{this.organizerName}}">{{this.organizerName}}</option>
                 {{/each}}
             </select><br>
-
-            <label for="newOrganizer">Or Enter New Organizer:</label>
-            <input type="text" id="newOrganizer" name="newOrganizer"><br>
 
             <label for="description">Description:</label> 
             <input type="text" id="description" name="description"><br>
@@ -88,54 +80,52 @@
     </div>
 
     <div id="update">
-    <h2>Update Event</h2>
-    <form id="updateEventForm">
-        <label for="eventID_update">Event ID:</label>
-        <select id="eventID_update" name="eventID_update">
-            {{#each data}}
-                <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
-            {{/each}}
-        </select><br>
+        <h2>Update Event</h2>
+        <form id="updateEventForm">
+            <label for="updateEventID">Event ID:</label>
+            <select id="updateEventID" name="updateEventID">
+                {{#each data}}
+                    <option value="{{this.eventID}}">{{this.eventName}} (ID: {{this.eventID}})</option>
+                {{/each}}
+            </select><br>
 
-        <label for="newEventName">New Event Name:</label>
-        <input type="text" id="newEventName" name="newEventName"><br>
-        
-        <label for="newEventDate">New Event Date:</label>
-        <input type="date" id="newEventDate" name="newEventDate" required><br>
+            <label for="newEventName">New Event Name:</label>
+            <input type="text" id="newEventName" name="newEventName"><br>
+            
+            <label for="newEventDate">New Event Date:</label>
+            <input type="date" id="newEventDate" name="newEventDate" required><br>
 
-        <label for="newVenueName">New Venue:</label>
-        <select id="newVenueName">
-            <option value="">-- Select Existing Venue --</option>
-            {{#each venues}}
-                <option value="{{this.venueName}}">{{this.venueName}}</option>
-            {{/each}}
-        </select>
-        <input type="text" id="newVenueText" name="newVenue"><br>
+            <label for="newVenueName">New Venue:</label>
+            <select id="newVenueName" name="newVenueName">
+                <option value="">-- Select Existing Venue --</option>
+                {{#each venues}}
+                    <option value="{{this.venueName}}">{{this.venueName}}</option>
+                {{/each}}
+            </select><br>
 
-        <label for="newOrganizerName">New Organizer:</label>
-        <select id="newOrganizerName">
-            <option value="">-- Select Existing Organizer --</option>
-            {{#each organizers}}
-                <option value="{{this.organizerName}}">{{this.organizerName}}</option>
-            {{/each}}
-        </select>
-        <input type="text" id="newOrganizerText" name="newOrganizer"><br>
+            <label for="newOrganizerName">New Organizer:</label>
+            <select id="newOrganizerName" name="newOrganizerName">
+                <option value="">-- Select Existing Organizer --</option>
+                {{#each organizers}}
+                    <option value="{{this.organizerName}}">{{this.organizerName}}</option>
+                {{/each}}
+            </select><br>
 
-        <label for="newDescription">New Description:</label> 
-        <input type="text" id="newDescription" name="newDescription"><br>
+            <label for="newDescription">New Description:</label> 
+            <input type="text" id="newDescription" name="newDescription"><br>
 
-        <label for="newRequiresPayment">New Requires Payment:</label>
-        <select id="newRequiresPayment" name="newRequiresPayment">
-            <option value="0">No</option>
-            <option value="1">Yes</option>
-        </select><br>
+            <label for="newRequiresPayment">New Requires Payment:</label>
+            <select id="newRequiresPayment" name="newRequiresPayment">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select><br>
 
-        <label for="newMaxAttendees">New Max Attendees:</label> 
-        <input type="number" id="newMaxAttendees" name="newMaxAttendees"><br>
+            <label for="newMaxAttendees">New Max Attendees:</label> 
+            <input type="number" id="newMaxAttendees" name="newMaxAttendees"><br>
 
-        <input type="submit" value="Update Event">
-    </form>
-</div>
+            <input type="submit" value="Update Event">
+        </form>
+    </div>
 
     <div id="delete">
         <h2>Delete Event</h2>
@@ -150,7 +140,6 @@
         </form>
     </div>
 
-    <!-- Include client-side JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/events/add-event.js"></script>
     <script src="/js/events/delete-event.js"></script>

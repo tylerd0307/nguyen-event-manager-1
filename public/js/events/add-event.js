@@ -1,110 +1,99 @@
-let addEventForm = document.getElementById("addEventForm");
+document.addEventListener("DOMContentLoaded", function () {
+    const addEventForm = document.getElementById("addEventForm");
 
-addEventForm.addEventListener("submit", function (e) {
-    e.preventDefault();
+    addEventForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-    // Get input values
-    let inputEventName = document.getElementById("eventName").value;
-    let inputEventDate = document.getElementById("eventDate").value;
-    let inputDescription = document.getElementById("description").value;
-    let inputRequiresPayment = document.getElementById("requiresPayment").value;
-    let inputMaxAttendees = document.getElementById("maxAttendees").value;
+        const inputEventName = document.getElementById("eventName").value;
+        const inputEventDate = document.getElementById("eventDate").value;
+        const inputDescription = document.getElementById("description").value;
+        const inputRequiresPayment = document.getElementById("requiresPayment").value;
+        const inputMaxAttendees = document.getElementById("maxAttendees").value;
 
-    // Venue selection
-    let selectedVenue = document.getElementById("venueSelect").value;
-    let newVenue = document.getElementById("newVenue").value.trim();
+        const venueName = document.getElementById("venueSelect").value;
+        const organizerName = document.getElementById("organizerSelect").value;
 
-    // Organizer selection
-    let selectedOrganizer = document.getElementById("organizerSelect").value;
-    let newOrganizer = document.getElementById("newOrganizer").value.trim();
+        try {
+            const response = await fetch("/add-event", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    eventName: inputEventName,
+                    eventDate: inputEventDate,
+                    venueName: venueName,
+                    organizerName: organizerName,
+                    description: inputDescription,
+                    requiresPayment: parseInt(inputRequiresPayment, 10),
+                    maxAttendees: inputMaxAttendees
+                }),
+            });
 
-    // Determine which values to send
-    let venueToUse = newVenue !== "" ? newVenue : selectedVenue;
-    let organizerToUse = newOrganizer !== "" ? newOrganizer : selectedOrganizer;
+            if (response.ok) {
+                const newEvent = await response.json();
+                console.log("Event Added:", newEvent);
+                addRowToTable(newEvent);
+                addEventForm.reset();
+            } else {
+                const errorData = await response.json();
+                console.error("Error adding event:", errorData.error);
+                alert("Error adding event. Please check the console for details.");
+            }
+        } catch (error) {
+            console.error("Error adding event:", error);
+            alert("Error adding event. Please try again.");
+        }
+    });
 
-    if (!venueToUse || !organizerToUse) {
-        alert("Please select an existing venue/organizer or enter a new one.");
-        return;
+    // Function to add a new row to the table
+    function addRowToTable(newEvent) {
+        const table = document.getElementById("eventTable");
+        const newRow = table.insertRow(-1);
+        newRow.setAttribute("data-value", newEvent.eventID);
+
+        const cells = [
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell(),
+            newRow.insertCell()
+        ];
+
+        cells[0].textContent = newEvent.eventID;
+        cells[1].textContent = newEvent.eventName;
+        cells[2].textContent = newEvent.eventDate;
+        cells[3].textContent = newEvent.venueName;
+        cells[4].textContent = newEvent.organizerName;
+        cells[5].textContent = newEvent.description || "NULL";
+        cells[6].textContent = newEvent.requiresPayment ? "Yes" : "No";
+        cells[7].textContent = newEvent.maxAttendees;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.setAttribute("onclick", `deleteEvent('${newEvent.eventID}')`);
+        cells[8].appendChild(deleteButton);
+
+        // Update event dropdowns in other forms
+        updateEventDropdowns(newEvent);
     }
 
-    // Prepare data to send
-    let data = {
-        eventName: inputEventName,
-        eventDate: inputEventDate,
-        venueName: venueToUse,
-        organizerName: organizerToUse,
-        description: inputDescription,
-        requiresPayment: parseInt(inputRequiresPayment, 10),
-        maxAttendees: inputMaxAttendees
-    };
+    // Function to update event dropdowns
+    function updateEventDropdowns(newEvent) {
+        const eventDropdowns = [
+            document.getElementById("eventID_update"),
+            document.getElementById("deleteEventID")
+        ];
 
-    // AJAX request
-    fetch("/add-event", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    })
-    .then(response => response.json())
-    .then(newEvent => {
-        console.log("Event Added:", newEvent);
-        location.reload(); // Refresh page to update event list
-    })
-    .catch(error => console.error("Error adding event:", error));
+        eventDropdowns.forEach(dropdown => {
+            if (dropdown) { // Check if dropdown exist.
+              const option = document.createElement("option");
+              option.text = `${newEvent.eventID} - ${newEvent.eventName}`;
+              option.value = newEvent.eventID;
+              dropdown.appendChild(option);
+            }
+        });
+    }
 });
-
-
-
-// Function to add a new row to the table
-function addRowToTable(data) {
-    let currentTable = document.querySelector("#browse table");
-    let newRow = JSON.parse(data); // Parse the server response
-
-    let row = document.createElement("TR");
-    row.setAttribute("data-value", newRow.eventID);
-
-    let idCell = document.createElement("TD");
-    let eventNameCell = document.createElement("TD");
-    let eventDateCell = document.createElement("TD");
-    let venueCell = document.createElement("TD");
-    let organizerCell = document.createElement("TD");
-    let descriptionCell = document.createElement("TD");
-    let requiresPaymentCell = document.createElement("TD");
-    let maxAttendeesCell = document.createElement("TD");
-    let actionsCell = document.createElement("TD");
-
-    let deleteButton = document.createElement("button");
-    deleteButton.innerText = "Delete";
-    deleteButton.setAttribute("onclick", `deleteEvent('${newRow.eventID}')`);
-
-    actionsCell.appendChild(deleteButton);
-    idCell.innerText = newRow.eventID;
-    eventNameCell.innerText = newRow.eventName;
-    eventDateCell.innerText = newRow.eventDate;
-    venueCell.innerText = newRow.venueName;
-    organizerCell.innerText = newRow.organizerName;
-    descriptionCell.innerText = newRow.description || "NULL";
-    requiresPaymentCell.innerText = newRow.requiresPayment ? "Yes" : "No";
-    maxAttendeesCell.innerText = newRow.maxAttendees;
-
-    row.appendChild(idCell);
-    row.appendChild(eventNameCell);
-    row.appendChild(eventDateCell);
-    row.appendChild(venueCell);
-    row.appendChild(organizerCell);
-    row.appendChild(descriptionCell);
-    row.appendChild(requiresPaymentCell);
-    row.appendChild(maxAttendeesCell);
-    row.appendChild(actionsCell);
-
-    currentTable.appendChild(row);
-    updateEventDropdowns(newRow);
-}
-
-// Function to update event dropdowns
-function updateEventDropdowns(newEvent) {
-    let eventDropdown = document.getElementById("eventID_update");
-    let option = document.createElement("option");
-    option.text = `${newEvent.eventID} - ${newEvent.eventName}`;
-    option.value = newEvent.eventID;
-    eventDropdown.appendChild(option);
-}

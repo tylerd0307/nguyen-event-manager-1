@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Manage Payments</h1>
-    <a href="index.html">Back to Home</a>
+    <a href="/">Back to Home</a>
 
     <h2>Browse Payments</h2>
     <table border="1">
@@ -25,7 +25,7 @@
             <td>{{this.firstName}} {{this.lastName}}</td>
             <td>{{formatDate this.paymentDate 'YYYY-MM-DD'}}</td>
             <td>{{this.paymentStatus}}</td>
-            <td><a href="#" onclick="editPayment('{{this.paymentID}}')">Edit</a> | <a href="#" onclick="deletePayment('{{this.paymentID}}')">Delete</a></td>
+            <td><a href="#" onclick="deletePayment('{{this.paymentID}}')">Delete</a></td>
         </tr>
         {{/each}}
     </table>

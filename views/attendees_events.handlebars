@@ -6,9 +6,9 @@
 </head>
 <body>
   <h1>Manage Event Registrations</h1>
-  <a href="index.html">Back to Home</a>
+  <a href="/">Back to Home</a>
 
-  <div id="browseRegistrations">
+  <script src="/js/attendees_events/delete-attendee-event.js"></script> <div id="browseRegistrations">
     <h2>Browse Event Registrations</h2>
     <table border="1">
       <tr>
@@ -23,7 +23,6 @@
         <td>{{this.firstName}} {{this.lastName}}</td>
         <td>{{this.registrationStatus}}</td>
         <td>
-          <a href="#" onclick="editRegistration('{{this.eventID}}', '{{this.attendeeID}}', '{{this.registrationStatus}}')">Edit</a> |
           <a href="#" onclick="deleteEventRegistration('{{this.eventID}}', '{{this.attendeeID}}')">Delete</a>
         </td>
       </tr>
@@ -109,7 +108,6 @@
 
   <script src="/js/attendees_events/add-attendee-event.js"></script>
   <script src="/js/attendees_events/update-attendee-event.js"></script>
-  <script src="/js/attendees_events/delete-attendee-event.js"></script> <div id="browseRegistrations"></div>
 
 </body>
 </html>
