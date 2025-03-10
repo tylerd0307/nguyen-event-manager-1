@@ -696,5 +696,5 @@ app.post('/delete-attendee-event', async (req, res) => {
 
 // Start Server
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at http://classwork.engr.oregonstate.edu:${port}`);
 });
