@@ -1,16 +1,52 @@
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("updateAttendeeForm").addEventListener("submit", async function (event) {
+    const attendeeIdSelect = document.getElementById("attendeeID");
+    const updateAttendeeForm = document.getElementById("updateAttendeeForm");
+
+    attendeeIdSelect.addEventListener("change", async function () {
+        const attendeeID = this.value;
+
+        if (attendeeID) {
+            try {
+                const response = await fetch(`/attendees/${attendeeID}`); // Fetch attendee data
+                if (response.ok) {
+                    const attendee = await response.json();
+                    populateAttendeeForm(attendee); // Pre-populate form
+                } else {
+                    console.error("Failed to fetch attendee data.");
+                }
+            } catch (error) {
+                console.error("Error fetching attendee data:", error);
+            }
+        }
+    });
+
+    function populateAttendeeForm(attendee) {
+        document.getElementById("newAttendeeFirstName").value = attendee.firstName;
+        document.getElementById("newAttendeeLastName").value = attendee.lastName;
+        document.getElementById("newAttendeeEmail").value = attendee.email;
+        document.getElementById("newAttendeePhone").value = attendee.phoneNumber || ""; // Use empty string if phoneNumber is null or undefined
+    }
+
+    updateAttendeeForm.addEventListener("submit", async function (event) {
         console.log("Update Attendee Form Submitted");
         event.preventDefault();
 
         const formData = new FormData(this);
         const attendeeData = {
             attendeeID: formData.get("attendeeID"),
-            newAttendeeFirstName: formData.get("newAttendeeFirstName"),
-            newAttendeeLastName: formData.get("newAttendeeLastName"),
-            newAttendeeEmail: formData.get("newAttendeeEmail"),
-            newAttendeePhone: formData.get("newAttendeePhone") || null
         };
+
+        const newAttendeeFirstName = formData.get("newAttendeeFirstName");
+        if (newAttendeeFirstName) attendeeData.newAttendeeFirstName = newAttendeeFirstName;
+
+        const newAttendeeLastName = formData.get("newAttendeeLastName");
+        if (newAttendeeLastName) attendeeData.newAttendeeLastName = newAttendeeLastName;
+
+        const newAttendeeEmail = formData.get("newAttendeeEmail");
+        if (newAttendeeEmail) attendeeData.newAttendeeEmail = newAttendeeEmail;
+
+        const newAttendeePhone = formData.get("newAttendeePhone");
+        if (newAttendeePhone) attendeeData.newAttendeePhone = newAttendeePhone;
 
         try {
             const response = await fetch("/update-attendee", {
@@ -26,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(result);
 
             alert(result.success);
-            // Optionally, reload the table data after the update
             location.reload();
         } catch (error) {
             console.error("Error updating attendee:", error);

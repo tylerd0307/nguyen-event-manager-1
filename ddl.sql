@@ -41,12 +41,12 @@ CREATE TABLE Events (
     eventID INT AUTO_INCREMENT PRIMARY KEY,
     eventName VARCHAR(255) NOT NULL,
     eventDate DATE NOT NULL,
-    venueID INT NOT NULL,
+    venueID INT NULL, -- Allow NULL for venueID
     organizerID INT NOT NULL,
     description TEXT NULL,
     requiresPayment BOOLEAN NOT NULL DEFAULT 1, -- Determines if payment is required
     maxAttendees INT NOT NULL, -- Restricts attendee count based on venue capacity
-    FOREIGN KEY (venueID) REFERENCES Venues(venueID) ON DELETE CASCADE, -- Ensures event removal if venue is deleted
+    FOREIGN KEY (venueID) REFERENCES Venues(venueID) ON DELETE SET NULL, -- Ensures venueID can be NULL and handles deletion
     FOREIGN KEY (organizerID) REFERENCES Organizers(organizerID) ON DELETE CASCADE -- Deletes events if organizer is removed
 );
 
@@ -88,15 +88,15 @@ CREATE TABLE Payments (
 
 -- Insert Organizers
 INSERT INTO Organizers (organizerName, email, phoneNumber) VALUES
-('John Doe', 'john.doe@gmail.com', '555-2342'),
-('Jane Doe', 'jane.doe@gmail.com', '555-6234'),
-('LeBron James', 'lebron.james@gmail.com', '555-7232');
+('John Doe', 'john.doe@gmail.com', '555-232-1221'),
+('Jane Doe', 'jane.doe@gmail.com', '555-623-3221'),
+('LeBron James', 'lebron.james@gmail.com', '555-723-1322');
 
 -- Insert Venues (without venueID)
 INSERT INTO Venues (venueName, address, capacity, contactNumber) VALUES
-('Grand Hall', '123 Conference St', 500, '555-1111'),
-('Meeting Room A', '456 Office Rd', 100, '555-2222'),
-('Tech Lab', '789 Innovation Dr', 200, '555-3333');
+('Grand Hall', '123 Conference St', 500, '555-111-6542'),
+('Meeting Room A', '456 Office Rd', 100, '555-222-8622'),
+('Tech Lab', '789 Innovation Dr', 200, '555-333-4723');
 
 -- Insert Events with matching venueIDs
 INSERT INTO Events (eventName, eventDate, venueID, organizerID, description, requiresPayment, maxAttendees) VALUES
@@ -108,8 +108,8 @@ INSERT INTO Events (eventName, eventDate, venueID, organizerID, description, req
 -- Insert Attendees
 INSERT INTO Attendees (firstName, lastName, email, phoneNumber) VALUES
 ('Tyler', 'Nguyen', 'tyler.nguyen@gmail.com', NULL),
-('Alice', 'Johnson', 'alice.johnson@gmail.com', '555-9376'),
-('Nicholas', 'Nguyen', 'nicholas.nguyen@gmail.com', '555-4321');
+('Alice', 'Johnson', 'alice.johnson@gmail.com', '555-937-1334'),
+('Nicholas', 'Nguyen', 'nicholas.nguyen@gmail.com', '555-4321-1343');
 
 -- Insert Attendees_Events
 INSERT INTO Attendees_Events (eventID, attendeeID, registrationStatus) VALUES

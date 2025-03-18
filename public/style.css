@@ -2,7 +2,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #e9ecef;
     margin: 0;
-    padding: 20px;
+    padding: 0; /* Remove padding from body */
 }
 
 h1 {
@@ -87,19 +87,24 @@ input[type="submit"]:hover {
 }
 
 .container {
-    margin: 50px auto;
-    text-align: center;
+    width: 90%; /* Added width for better layout*/
+    margin: 20px auto; /* Adjust margin for spacing */
     padding: 20px;
     border-radius: 8px;
+    text-align: left; /* Changed to left align to match table and form*/
 }
 
 .nav-links {
     list-style: none;
-    padding: 0;
+    padding: 10px; /*added padding to the nav links container*/
+    margin: 0;
+    background-color: #f0f0f0; /* added background color to nav bar */
+    border-bottom: 1px solid #ddd; /*added a bottom border for better visual seperation*/
+    display: flex; /* Display links horizontally */
 }
 
 .nav-links li {
-    margin: 10px 0;
+    margin-right: 15px; /* Added right margin for spacing*/
 }
 
 .nav-links a {

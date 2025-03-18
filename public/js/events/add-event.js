@@ -44,12 +44,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Function to add a new row to the table
     function addRowToTable(newEvent) {
         const table = document.getElementById("eventTable");
         const newRow = table.insertRow(-1);
         newRow.setAttribute("data-value", newEvent.eventID);
-
+    
         const cells = [
             newRow.insertCell(),
             newRow.insertCell(),
@@ -61,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             newRow.insertCell(),
             newRow.insertCell()
         ];
-
+    
         cells[0].textContent = newEvent.eventID;
         cells[1].textContent = newEvent.eventName;
         cells[2].textContent = newEvent.eventDate;
@@ -70,12 +69,13 @@ document.addEventListener("DOMContentLoaded", function () {
         cells[5].textContent = newEvent.description || "NULL";
         cells[6].textContent = newEvent.requiresPayment ? "Yes" : "No";
         cells[7].textContent = newEvent.maxAttendees;
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.setAttribute("onclick", `deleteEvent('${newEvent.eventID}')`);
-        cells[8].appendChild(deleteButton);
-
+    
+        const deleteLink = document.createElement("a");
+        deleteLink.href = "#"; // Set href to '#' or any desired value
+        deleteLink.textContent = "Delete";
+        deleteLink.setAttribute("onclick", `deleteEvent('${newEvent.eventID}')`);
+        cells[8].appendChild(deleteLink);
+    
         // Update event dropdowns in other forms
         updateEventDropdowns(newEvent);
     }

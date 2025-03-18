@@ -36,17 +36,24 @@
         <input type="submit" value="Add Organizer">
     </form>
 
-    <h2>Update Organizer</h2>
+   <h2>Update Organizer</h2>
     <form id="updateOrganizerForm">
         <label>Organizer ID:</label>
-        <select name="organizerID">
+        <select name="organizerID" id="organizerID">
             {{#each data}}
-            <option value="{{this.organizerID}}">{{this.organizerName}} (ID: {{this.organizerID}})</option>
+            <option value="{{this.organizerID}}" {{#if (eq this.organizerID ../selectedOrganizer.organizerID)}}selected{{/if}}>{{this.organizerName}} (ID: {{this.organizerID}})</option>
             {{/each}}
         </select><br>
-        <label>New Organizer Name:</label> <input type="text" name="newOrganizerName"><br>
-        <label>New Email:</label> <input type="email" name="newOrganizerEmail"><br>
-        <label>New Phone:</label> <input type="text" name="newOrganizerPhone"><br>
+
+        <label>New Organizer Name:</label>
+        <input type="text" name="newOrganizerName" id="newOrganizerName" value="{{selectedOrganizer.organizerName}}"><br>
+
+        <label>New Email:</label>
+        <input type="email" name="newOrganizerEmail" id="newOrganizerEmail" value="{{selectedOrganizer.email}}"><br>
+
+        <label>New Phone:</label>
+        <input type="text" name="newOrganizerPhone" id="newOrganizerPhone" value="{{selectedOrganizer.phoneNumber}}"><br>
+
         <input type="submit" value="Update Organizer">
     </form>
 

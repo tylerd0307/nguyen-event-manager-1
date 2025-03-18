@@ -42,15 +42,24 @@
     <h2>Update Attendee</h2>
     <form id="updateAttendeeForm">
         <label>Attendee ID:</label>
-        <select name="attendeeID">
+        <select name="attendeeID" id="attendeeID">
             {{#each data}}
-            <option value="{{this.attendeeID}}">{{this.firstName}} {{this.lastName}} (ID: {{this.attendeeID}})</option>
+            <option value="{{this.attendeeID}}" {{#if (eq this.attendeeID ../selectedAttendee.attendeeID)}}selected{{/if}}>{{this.firstName}} {{this.lastName}} (ID: {{this.attendeeID}})</option>
             {{/each}}
         </select><br>
-        <label>New First Name:</label> <input type="text" name="newAttendeeFirstName"><br>
-        <label>New Last Name:</label> <input type="text" name="newAttendeeLastName"><br>
-        <label>New Email:</label> <input type="email" name="newAttendeeEmail"><br>
-        <label>New Phone:</label> <input type="text" name="newAttendeePhone"><br>
+
+        <label>New First Name:</label>
+        <input type="text" id="newAttendeeFirstName" name="newAttendeeFirstName" value="{{selectedAttendee.firstName}}"><br>
+
+        <label>New Last Name:</label>
+        <input type="text" id="newAttendeeLastName" name="newAttendeeLastName" value="{{selectedAttendee.lastName}}"><br>
+
+        <label>New Email:</label>
+        <input type="email" id="newAttendeeEmail" name="newAttendeeEmail" value="{{selectedAttendee.email}}"><br>
+
+        <label>New Phone:</label>
+        <input type="text" id="newAttendeePhone" name="newAttendeePhone" value="{{selectedAttendee.phoneNumber}}"><br>
+
         <input type="submit" value="Update Attendee">
     </form>
 

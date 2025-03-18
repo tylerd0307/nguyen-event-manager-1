@@ -64,22 +64,22 @@
       <label for="updateEventID">Event:</label>
       <select id="updateEventID" name="eventID">
         {{#each events}}
-        <option value="{{this.eventID}}">{{this.eventName}}</option>
+        <option value="{{this.eventID}}" {{#if (eq this.eventID ../selectedAttendeeEvent.eventID)}}selected{{/if}}>{{this.eventName}}</option>
         {{/each}}
       </select><br>
 
       <label for="updateAttendeeID">Attendee:</label>
       <select id="updateAttendeeID" name="attendeeID">
         {{#each attendees}}
-        <option value="{{this.attendeeID}}">{{this.firstName}} {{this.lastName}}</option>
+        <option value="{{this.attendeeID}}" {{#if (eq this.attendeeID ../selectedAttendeeEvent.attendeeID)}}selected{{/if}}>{{this.firstName}} {{this.lastName}}</option>
         {{/each}}
       </select><br>
 
       <label for="updateRegistrationStatus">Status:</label>
       <select id="updateRegistrationStatus" name="registrationStatus">
-        <option value="Registered">Registered</option>
-        <option value="Pending">Pending</option>
-        <option value="Cancelled">Cancelled</option>
+        <option value="Registered" {{#if (eq ../selectedAttendeeEvent.registrationStatus "Registered")}}selected{{/if}}>Registered</option>
+        <option value="Pending" {{#if (eq ../selectedAttendeeEvent.registrationStatus "Pending")}}selected{{/if}}>Pending</option>
+        <option value="Cancelled" {{#if (eq ../selectedAttendeeEvent.registrationStatus "Cancelled")}}selected{{/if}}>Cancelled</option>
       </select><br>
       <input type="submit" value="Update Event Registration">
     </form>

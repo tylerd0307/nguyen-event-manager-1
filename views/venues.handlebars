@@ -44,21 +44,21 @@
         <label for="venueID">Venue ID:</label>
         <select id="venueID" name="venueID">
             {{#each data}}
-                <option value="{{this.venueID}}">{{this.venueName}} (ID: {{this.venueID}})</option>
+                <option value="{{this.venueID}}" {{#if (eq this.venueID ../selectedVenue.venueID)}}selected{{/if}}>{{this.venueName}} (ID: {{this.venueID}})</option>
             {{/each}}
         </select><br>
 
         <label for="venueName">Venue Name:</label>
-        <input type="text" id="venueName" name="venueName" value="{{this.venueName}}"><br>
+        <input type="text" id="venueName" name="venueName" value="{{selectedVenue.venueName}}"><br>
 
         <label for="address">Address:</label>
-        <input type="text" id="address" name="address" value="{{this.address}}"><br>
+        <input type="text" id="address" name="address" value="{{selectedVenue.address}}"><br>
 
         <label for="capacity">Capacity:</label>
-        <input type="number" id="capacity" name="capacity" value="{{this.capacity}}"><br>
+        <input type="number" id="capacity" name="capacity" value="{{selectedVenue.capacity}}"><br>
 
         <label for="contactNumber">Contact Number:</label>
-        <input type="text" id="contactNumber" name="contactNumber" value="{{this.contactNumber}}"><br>
+        <input type="text" id="contactNumber" name="contactNumber" value="{{selectedVenue.contactNumber}}"><br>
 
         <input type="submit" value="Update Venue">
     </form>

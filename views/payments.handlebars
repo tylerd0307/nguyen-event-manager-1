@@ -64,37 +64,37 @@
         <label for="paymentID">Payment ID:</label>
         <select id="paymentID" name="paymentID">
             {{#each data}}
-            <option value="{{this.paymentID}}">{{this.eventName}} (ID: {{this.paymentID}})</option>
+            <option value="{{this.paymentID}}" {{#if (eq this.paymentID ../selectedPayment.paymentID)}}selected{{/if}}>{{this.eventName}} (ID: {{this.paymentID}})</option>
             {{/each}}
         </select><br>
 
         <label for="newEventID">New Event:</label>
         <select id="newEventID" name="newEventID">
             {{#each events}}
-                <option value="{{this.eventID}}">{{this.eventName}}</option>
+                <option value="{{this.eventID}}" {{#if (eq this.eventID ../selectedPayment.eventID)}}selected{{/if}}>{{this.eventName}}</option>
             {{/each}}
         </select><br>
 
         <label for="newAttendeeID">New Attendee:</label>
         <select id="newAttendeeID" name="newAttendeeID">
             {{#each attendees}}
-                <option value="{{this.attendeeID}}">{{this.firstName}} {{this.lastName}}</option>
+                <option value="{{this.attendeeID}}" {{#if (eq this.attendeeID ../selectedPayment.attendeeID)}}selected{{/if}}>{{this.firstName}} {{this.lastName}}</option>
             {{/each}}
         </select><br>
 
         <label for="newPaymentDate">New Date:</label>
-        <input type="date" id="newPaymentDate" name="newPaymentDate"><br>
+        <input type="date" id="newPaymentDate" name="newPaymentDate" value="{{formatDate selectedPayment.paymentDate 'YYYY-MM-DD'}}"><br>
 
         <label for="newPaymentStatus">New Status:</label>
         <select id="newPaymentStatus" name="newPaymentStatus">
-            <option value="Paid">Paid</option>
-            <option value="Not Required">Not Required</option>
-            <option value="Pending">Pending</option>
+            <option value="Paid" {{#if (eq selectedPayment.paymentStatus "Paid")}}selected{{/if}}>Paid</option>
+            <option value="Not Required" {{#if (eq selectedPayment.paymentStatus "Not Required")}}selected{{/if}}>Not Required</option>
+            <option value="Pending" {{#if (eq selectedPayment.paymentStatus "Pending")}}selected{{/if}}>Pending</option>
         </select><br>
 
         <input type="submit" value="Update Payment">
     </form>
-
+    
     <h2>Delete Payment</h2>
     <form id="deletePaymentForm">
         <label>Payment ID:</label>
