@@ -1,7 +1,7 @@
 
 // Citation Scope: Connect webapp to database (fucntion)
 // Date: 02/27/2025
-// Originality: Adapted from CS340 starter code
+// Originality: Adapted from CS340 starter code (exceptions are explained in the README)
 // Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
 
 
