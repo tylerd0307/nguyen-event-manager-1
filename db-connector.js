@@ -1,5 +1,10 @@
-const mysql = require ('mysql2');
 
+// Citation Scope: Connect webapp to database (function)
+// Date: 02/27/2025
+// Originality: Adapted from CS340 starter code
+// Source URL: https://github.com/osu-cs340-ecampus/nodejs-starter-app
+
+const mysql = require ('mysql2');
 
 // Create a connection pool using Tyler's credentials
 const tylerPool = mysql.createPool({
